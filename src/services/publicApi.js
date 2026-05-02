@@ -21,7 +21,7 @@
 import { keywordMap } from '../data'
 
 // Points to local proxy in dev, production backend on Render otherwise
-const url = import.meta.env.VITE_API_URL || ''
+const url = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'https://meditrujillo0.onrender.com')
 
 // Plan weight: premium=3, pro=2, basic=1 (used for sorting)
 export const rankPlan = (plan) => ({ premium: 3, pro: 2, basic: 1 }[plan] ?? 0)

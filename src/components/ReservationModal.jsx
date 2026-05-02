@@ -173,7 +173,7 @@ export function ReservationModal({ doctor, onClose, onReserve, error }) {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md animate-fade-in">
-      <div className="w-full max-w-[640px] overflow-hidden rounded-[48px] bg-white dark:bg-slate-900 shadow-2xl relative border border-white/10">
+      <div className="w-full max-w-[640px] overflow-y-auto max-h-[90dvh] rounded-[48px] bg-white dark:bg-slate-900 shadow-2xl relative border border-white/10">
         
         {/* Close Button */}
         <button 
