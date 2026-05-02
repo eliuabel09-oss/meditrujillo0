@@ -1,0 +1,2540 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MediTrujillo Admin</title>
+  <style>
+    :root {
+      font-family: 'Inter', sans-serif;
+      --bg-body: #f8f9fa;
+      --bg-sidebar: #ffffff;
+      --bg-panel: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --accent: #0ca678;
+      --accent-soft: #e6fcf5;
+      --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    body.dark {
+      --bg-body: #0f172a;
+      --bg-sidebar: #1e293b;
+      --bg-panel: #1e293b;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --accent: #2ecc71;
+      --accent-soft: rgba(46, 204, 113, 0.1);
+      --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background: var(--bg-body);
+      color: var(--text-main);
+    }
+
+    .sidebar {
+      width: 260px;
+      background: var(--bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      border-right: 1px solid var(--border);
+    }
+
+    .sidebar-header {
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Login Screen */
+    #loginOverlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-body);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-card {
+      background: var(--bg-panel);
+      width: 100%;
+      max-width: 400px;
+      padding: 48px;
+      border-radius: 32px;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .login-logo {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text-main);
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .login-subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-bottom: 40px;
+      display: block;
+    }
+
+    .login-step {
+      display: none;
+      animation: slide-up 0.4s ease-out;
+    }
+
+    .login-step.active {
+      display: block;
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .login-input {
+      width: 100%;
+      height: 56px;
+      background: var(--bg-body);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 0 20px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 20px;
+      outline: none;
+      transition: all 0.2s;
+      text-align: center;
+      letter-spacing: 0.1em;
+    }
+
+    .login-input:focus {
+      border-color: var(--accent);
+      background: var(--bg-panel);
+      box-shadow: 0 0 0 4px var(--accent-soft);
+    }
+
+    .login-btn {
+      width: 100%;
+      height: 56px;
+      border-radius: 16px;
+      background: var(--accent);
+      color: white;
+      font-size: 16px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px var(--accent-soft);
+      filter: brightness(1.1);
+    }
+
+    .login-theme-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: var(--card-shadow);
+      transition: all 0.2s;
+    }
+
+    .login-theme-btn:hover {
+      transform: scale(1.1);
+      border-color: var(--accent);
+    }
+
+    body:not(.logged-in) .sidebar,
+    body:not(.logged-in) .main-content {
+      display: none;
+    }
+
+    .sidebar-header .logo {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-header .badge {
+      background: var(--accent-soft);
+      color: var(--accent);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 12px;
+      display: inline-block;
+    }
+
+    .sidebar-nav {
+      padding: 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      margin-top: 24px;
+      margin-bottom: 8px;
+      padding: 0 16px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .nav-item {
+      padding: 10px 16px;
+      border-radius: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border: none;
+      background: transparent;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-item:hover {
+      background: var(--bg-body);
+      color: var(--text-main);
+      transform: translateX(4px);
+    }
+
+    .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .main-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 40px;
+    }
+
+    .tab-pane {
+      display: none;
+    }
+
+    .tab-pane.active {
+      display: block;
+    }
+
+    .top-header {
+      margin-bottom: 32px;
+    }
+
+    .top-header h1 {
+      margin: 0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .top-header .subtitle {
+      color: var(--text-muted);
+      font-size: 15px;
+      margin-top: 4px;
+    }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-panel);
+      padding: 8px 24px;
+      border-radius: 20px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+      min-height: 64px;
+    }
+
+    .period-toggles {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .period-btn {
+      padding: 8px 16px;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--text-muted);
+      background: transparent;
+      transition: 0.2s;
+    }
+
+    .period-btn:hover {
+      color: var(--text-main);
+    }
+
+    .period-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .date-range {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .summary-card {
+      background: var(--bg-panel);
+      border-radius: 20px;
+      padding: 20px;
+      position: relative;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+    }
+
+    .summary-card .label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .summary-card .value {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-top: 12px;
+    }
+
+    .summary-card .subtext {
+      font-size: 12px;
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    .summary-card .tag {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+
+    .tag.green {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .tag.blue {
+      background: rgba(37, 99, 235, 0.1);
+      color: #3b82f6;
+    }
+
+    .tag.orange {
+      background: rgba(217, 119, 6, 0.1);
+      color: #f59e0b;
+    }
+
+    .tag.teal {
+      background: rgba(2, 132, 199, 0.1);
+      color: #0ea5e9;
+    }
+
+    .chart-card {
+      background: var(--bg-panel);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 40px;
+    }
+
+    .chart-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .chart-subtitle {
+      font-size: 13px;
+      color: #64748b;
+      margin-top: 6px;
+    }
+
+    .chart-total {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text-main);
+      text-align: right;
+    }
+
+    .chart-total-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .chart-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 180px;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 0 4px;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px);
+      background-size: 100% 40px;
+    }
+
+    .chart-bar-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      height: 100%;
+      justify-content: flex-end;
+    }
+
+    .chart-bar {
+      width: 85%;
+      border-radius: 8px 8px 0 0;
+      background: #e2e8f0;
+      transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+      min-height: 0;
+      position: relative;
+    }
+
+    .bar-segments-wrapper {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border-radius: inherit;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .bar-segment {
+      width: 100%;
+      transition: height 0.6s ease;
+    }
+
+    .bar-confirmed {
+      background: linear-gradient(to top, #0ca678, #4ade80);
+    }
+
+    .bar-cancelled {
+      background: linear-gradient(to top, #e11d48, #ef4444);
+    }
+
+    .chart-bar.highlight {
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    .chart-bar.highlight::after {
+      content: 'HOY';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      font-weight: 900;
+      color: #3b82f6;
+      letter-spacing: 1px;
+    }
+
+    /* Tooltip */
+    .chart-bar:hover::before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 105%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text-main);
+      color: var(--bg-panel);
+      padding: 8px 12px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      z-index: 10;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      pointer-events: none;
+    }
+
+    .chart-bar.highlight::after {
+      content: 'HOY';
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 8px;
+      font-weight: 900;
+      color: #3b82f6;
+      letter-spacing: 1px;
+    }
+
+    .chart-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .chart-line {
+      width: 100%;
+      height: 2px;
+      background: var(--border);
+      margin-bottom: 24px;
+    }
+
+    .chart-legend {
+      display: flex;
+      gap: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: var(--card-shadow);
+      margin-bottom: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .panel-title h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .panel-badge {
+      border-radius: 999px;
+      background: var(--bg-body);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    .row:first-child {
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    .title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .tiny {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.6;
+      margin-top: 4px;
+    }
+
+    .row-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .chip.plan-premium,
+    .chip.state-active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .chip.plan-pro {
+      background: rgba(46, 204, 113, 0.1);
+      color: #2ecc71;
+    }
+
+    .chip.plan-basic {
+      background: var(--bg-body);
+      color: var(--text-muted);
+    }
+
+    .chip.state-due {
+      background: rgba(217, 119, 6, 0.1);
+      color: #d97706;
+    }
+
+    .chip.state-expired {
+      background: rgba(225, 29, 72, 0.1);
+      color: #e11d48;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 18px;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    button:active {
+      transform: scale(0.95);
+    }
+
+    button::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.4);
+      opacity: 0;
+      border-radius: 100%;
+      transform: scale(1, 1) translate(-50%);
+      transform-origin: 50% 50%;
+    }
+
+    @keyframes ripple {
+      0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+      }
+
+      100% {
+        transform: scale(20, 20);
+        opacity: 0;
+      }
+    }
+
+    button:focus:not(:active)::after {
+      animation: ripple 0.4s ease-out;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 12px rgba(12, 166, 120, 0.2);
+    }
+
+    .primary:hover {
+      background: #099268;
+      box-shadow: 0 6px 16px rgba(12, 166, 120, 0.3);
+    }
+
+    .secondary {
+      background: var(--bg-body);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+    }
+
+    .warn {
+      background: rgba(225, 29, 72, 0.1);
+      color: #e11d48;
+    }
+
+    .success {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .neutral {
+      background: var(--bg-body);
+      color: var(--text-muted);
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0 16px;
+      height: 44px;
+      font: inherit;
+      font-size: 14px;
+      background: var(--bg-sidebar);
+      color: var(--text-main);
+      outline: none;
+      transition: 0.2s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-soft);
+    }
+
+    textarea {
+      min-height: 100px;
+      padding-top: 12px;
+      resize: vertical;
+    }
+
+    label span {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .form-grid .full {
+      grid-column: 1 / -1;
+    }
+
+    .empty {
+      padding: 24px 0;
+      color: #94a3b8;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .link {
+      color: #0ca678;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Schedules */
+    .schedule-day-panel {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      border: 1px solid #f1f5f9;
+    }
+
+    .schedule-day-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .flex-center {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .toggle-btn {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      cursor: pointer;
+      border: none;
+      padding: 0;
+    }
+
+    .toggle-btn.on {
+      background: #0ca678;
+    }
+
+    .toggle-knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.3s;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .toggle-btn.on .toggle-knob {
+      transform: translateX(20px);
+    }
+
+    .schedule-slots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .slot-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--bg-sidebar);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .slot-btn.active {
+      background: #e6fcf5;
+      border-color: #69dbaf;
+      color: #0ca678;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .filter-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #94a3b8;
+      letter-spacing: 0.1em;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .content-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .info-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      transition: border-color .2s, box-shadow .2s, transform .2s;
+    }
+
+    .info-card:hover {
+      border-color: var(--accent);
+      box-shadow: var(--card-shadow);
+      transform: translateY(-1px);
+    }
+
+    .info-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .info-card-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .info-card-subtitle {
+      color: var(--text-muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 4px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .info-pill {
+      background: var(--bg-body);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-width: 0;
+    }
+
+    .info-pill span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .info-pill strong {
+      display: block;
+      color: var(--text-main);
+      font-size: 13px;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .status-pill::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 999px;
+      background: currentColor;
+    }
+
+    .status-pill.ok {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .status-pill.wait {
+      background: rgba(217, 119, 6, 0.1);
+      color: #d97706;
+    }
+
+    .status-pill.stop {
+      background: rgba(225, 29, 72, 0.1);
+      color: #e11d48;
+    }
+
+    .status-pill.info {
+      background: rgba(47, 107, 255, 0.1);
+      color: #2f6bff;
+    }
+
+    .details-box {
+      margin-top: 12px;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+
+    .details-box summary {
+      cursor: pointer;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 800;
+      list-style: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .details-box summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .details-box summary::after {
+      content: "+";
+      display: inline-grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+    }
+
+    .details-box[open] summary::after {
+      content: "-";
+    }
+
+    .details-content {
+      margin-top: 10px;
+      display: grid;
+      gap: 8px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .technical-text {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: var(--bg-body);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+      color: var(--text-muted);
+    }
+
+    .appointment-card {
+      border-left: 4px solid #0ca678;
+    }
+
+    .notification-card {
+      border-left: 4px solid #f59e0b;
+    }
+
+    .pending-card {
+      border-left: 4px solid #2f6bff;
+    }
+
+    .doctor-card {
+      border-left: 4px solid var(--border);
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      margin-top: 14px;
+    }
+
+    .soft-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 38px;
+    }
+
+    /* Mobile Responsive Styles */
+    .mobile-menu-btn {
+      display: none;
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-main);
+      padding: 0;
+    }
+
+    @media (max-width: 1024px) {
+      .summary-cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .main-content {
+        padding: 24px;
+      }
+
+      .chart-bars {
+        height: 140px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+        overflow: auto;
+      }
+
+      .sidebar {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        bottom: 0;
+        z-index: 100;
+        transition: left 0.3s ease;
+        box-shadow: 4px 0 24px rgba(0, 0, 0, 0.1);
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .mobile-menu-btn {
+        display: block;
+        margin-right: 16px;
+      }
+
+      .main-content {
+        padding: 16px;
+        overflow: visible;
+      }
+
+      .top-header {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 16px;
+      }
+
+      .summary-cards {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+
+      .summary-card {
+        padding: 16px;
+      }
+
+      .summary-card .value {
+        font-size: 28px;
+      }
+
+      .chart-card {
+        padding: 20px;
+      }
+
+      .chart-legend {
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+    }
+
+    /* Toast Notifications */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 10000;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      pointer-events: none;
+    }
+
+    .toast {
+      pointer-events: auto;
+      min-width: 300px;
+      max-width: 400px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(12px);
+      padding: 16px 20px;
+      border-radius: 16px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateX(120%);
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+      opacity: 0;
+    }
+
+    .toast.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .toast-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    .toast.success .toast-icon {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .toast.error .toast-icon {
+      background: rgba(225, 29, 72, 0.1);
+      color: #e11d48;
+    }
+
+    .toast.info .toast-icon {
+      background: rgba(47, 107, 255, 0.1);
+      color: #2f6bff;
+    }
+
+    .toast-content {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .panel {
+      padding: 16px;
+    }
+
+    .row {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .actions {
+      justify-content: flex-start;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .filter-bar {
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+      padding: 16px;
+    }
+
+    .filter-group {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .period-toggles {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      width: 100%;
+      gap: 4px;
+    }
+
+    .period-btn {
+      padding: 8px;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .info-card-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .card-actions {
+      justify-content: flex-start;
+    }
+
+    /* Overlay for mobile sidebar */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      z-index: 99;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar-overlay.open {
+      display: block;
+    }
+
+    .dashboard-grid {
+      grid-template-columns: 1fr;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div class="logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="#0ca678" />
+            <path d="M2 17L12 22L22 17" stroke="#0ca678" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <path d="M2 12L12 17L22 12" stroke="#0ca678" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          MediTrujillo
+        </div>
+        <button class="mobile-menu-btn" style="margin:0; padding:0 8px;" onclick="toggleSidebar()">&times;</button>
+      </div>
+      <div class="badge">Administrador</div>
+    </div>
+    <div class="sidebar-nav">
+      <div class="sidebar-section">Principal</div>
+      <button class="nav-item active" onclick="switchTab('dashboard', event)">Panel de Control</button>
+
+      <div class="sidebar-section">Módulos</div>
+      <button class="nav-item" onclick="switchTab('citas', event)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="8.5" cy="7" r="4"></circle>
+          <polyline points="17 11 19 13 23 9"></polyline>
+        </svg>
+        <span class="nav-text" style="white-space: normal; line-height: 1.2;">Citas, Reservas y Pendientes <span
+            id="pendingSidebarBadge" class="sidebar-notification" style="display:none">0</span></span>
+      </button>
+
+      <div class="sidebar-section">Administración</div>
+      <button class="nav-item" onclick="switchTab('doctores', event)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+          <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        <span class="nav-text">Doctores Administrar</span>
+      </button>
+      <div style="padding: 16px; margin-top: auto; border-top: 1px solid var(--border)">
+        <button class="nav-item" id="themeToggle" style="width:100%; margin-bottom: 8px;">
+          <!-- SVG will be injected by JS -->
+          Cambiando...
+        </button>
+        <button class="nav-item" style="width:100%; color: #ef4444" onclick="logout()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Cerrar Sesión
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="loginOverlay">
+    <button id="loginThemeToggle" class="login-theme-btn" title="Cambiar tema">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+    <div class="login-card">
+      <span class="login-logo">MediTrujillo</span>
+      <span class="login-subtitle">Panel de Administración</span>
+
+      <div id="step-key" class="login-step active">
+        <input type="password" id="loginKey" class="login-input" placeholder="Admin Key"
+          autocomplete="current-password" />
+        <button class="login-btn" onclick="verifyKey()">Siguiente</button>
+      </div>
+
+      <div id="step-2fa" class="login-step">
+        <div style="margin-bottom: 20px; font-weight: 700; color: var(--text-main)">Código 2FA</div>
+        <input type="text" id="login2fa" class="login-input" placeholder="000000" maxlength="6" />
+        <button class="login-btn" onclick="verify2fa()">Entrar al Panel</button>
+        <button class="nav-item" style="margin: 16px auto 0; font-size: 12px;" onclick="backToKey()">← Volver</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <div class="main-content">
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard" class="tab-pane active">
+      <div class="top-header" style="display:flex; align-items:flex-end; justify-content:space-between;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <button class="mobile-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+          <div>
+            <h1 style="margin:0">Panel de Control</h1>
+            <div class="subtitle">Resumen general del sistema</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-group">
+          <span class="filter-label">PERIODO:</span>
+          <div class="period-toggles">
+            <button class="period-btn" onclick="switchPeriod('hoy', event)">Hoy</button>
+            <button class="period-btn active" onclick="switchPeriod('semana', event)">Semana</button>
+            <button class="period-btn" onclick="switchPeriod('mes', event)">Mes</button>
+            <button class="period-btn" onclick="switchPeriod('año', event)">Año</button>
+          </div>
+        </div>
+        <div class="date-range" id="dateRangeText">--</div>
+      </div>
+
+      <div class="summary-cards">
+        <div class="summary-card">
+          <div class="label">Doctores</div>
+          <div class="value" id="doctorsCount">0</div>
+          <div class="subtext">Activos</div>
+          <div class="tag green">Doc</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Solicitudes</div>
+          <div class="value" id="pendingCount">0</div>
+          <div class="subtext" style="color: #f59e0b">Médicos nuevos</div>
+          <div class="tag orange">Solic</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Citas Hoy</div>
+          <div class="value" id="todayAppointmentsCount">0</div>
+          <div class="subtext" id="todayDateText" style="color: var(--text-muted)">--</div>
+          <div class="tag blue">Hoy</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Citas Totales</div>
+          <div class="value" id="appointmentsCount">0</div>
+          <div class="subtext" style="color: var(--text-muted)">En el sistema</div>
+          <div class="tag teal">Tot</div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header">
+          <div>
+            <div class="chart-title">Citas</div>
+            <div class="chart-subtitle" id="chartDateText">Lunes a domingo - dia actual resaltado</div>
+          </div>
+          <div>
+            <div class="chart-total" id="chartTotalCount">0</div>
+            <div class="chart-total-sub">en el periodo</div>
+          </div>
+        </div>
+
+        <div class="chart-bars" id="chartBars">
+          <div class="chart-bar-container">
+            <div class="chart-bar" id="bar-Lunes" style="height: 0%"></div>
+            <div class="chart-label">LUN</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" id="bar-Martes" style="height: 0%"></div>
+            <div class="chart-label">MAR</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" id="bar-Miercoles" style="height: 0%"></div>
+            <div class="chart-label">MIE</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" id="bar-Jueves" style="height: 0%"></div>
+            <div class="chart-label">JUE</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" id="bar-Viernes" style="height: 0%"></div>
+            <div class="chart-label">VIE</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" id="bar-Sabado" style="height: 0%"></div>
+            <div class="chart-label">SAB</div>
+          </div>
+          <div class="chart-bar-container">
+            <div class="chart-bar" id="bar-Domingo" style="height: 0%"></div>
+            <div class="chart-label">DOM</div>
+          </div>
+        </div>
+
+        <div class="chart-line"></div>
+        <div class="chart-legend" style="margin-top: 12px; justify-content: flex-start; gap: 24px">
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #4ade80"></div> Confirmadas
+          </div>
+          <div class="legend-item">
+            <div class="legend-dot" style="background: #ef4444"></div> Canceladas
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <section class="panel">
+          <div class="panel-title">
+            <h2>Bloqueos por correo</h2>
+            <div class="panel-badge">Protección</div>
+          </div>
+          <form class="form-grid" id="blockEmailForm" style="margin-top:0">
+            <label class="full"><span>Correo a bloquear</span><input name="email" type="email"
+                placeholder="correo@ejemplo.com" required /></label>
+            <div class="full actions"><button class="warn" type="submit">Bloquear correo</button></div>
+          </form>
+          <div id="blockedEmailsList" style="margin-top:16px; border-top:1px solid var(--border); padding-top:16px">
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-title">
+            <h2>UID bloqueados</h2>
+            <div class="panel-badge">Auth</div>
+          </div>
+          <div id="blockedList"></div>
+        </section>
+      </div>
+    </div>
+
+    <!-- CITAS, RESERVAS Y PENDIENTES -->
+    <div id="tab-citas" class="tab-pane">
+      <div class="top-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <button class="mobile-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+          <div>
+            <h1 style="margin:0">Citas, Reservas y Pendientes</h1>
+            <div class="subtitle">Monitorea reservas, aprobaciones y notificaciones</div>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <label style="margin:0"><span style="margin:0; font-size:11px">FILTRAR CITAS POR DOCTOR:</span></label>
+          <select id="doctorFilter" style="width:200px; height: 38px; padding: 0 12px; font-size: 13px;"
+            onchange="filterAppointments()">
+            <option value="">Todas las citas</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div>
+          <section class="panel">
+            <div class="panel-title">
+              <h2>Reservas activas</h2>
+              <div class="panel-badge">Confirmadas</div>
+            </div>
+            <div id="appointmentsList"></div>
+          </section>
+        </div>
+        <div>
+          <section class="panel">
+            <div class="panel-title">
+              <h2>Solicitudes pendientes</h2>
+              <div class="panel-badge" id="pendingBadge" style="background: rgba(245,158,11,0.1); color:#f59e0b">0
+                nuevos</div>
+            </div>
+            <div id="pendingList"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-title">
+              <h2>Notificaciones WhatsApp</h2>
+              <div class="panel-badge">Auditoría</div>
+            </div>
+            <div id="notificationsList"></div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <!-- DOCTORES ADMINISTRAR -->
+    <div id="tab-doctores" class="tab-pane">
+      <div class="top-header" style="display:flex; justify-content:space-between; align-items:flex-end;">
+        <div style="display:flex; align-items:center; gap:16px;">
+          <button class="mobile-menu-btn" onclick="toggleSidebar()">&#9776;</button>
+          <div>
+            <h1 style="margin:0">Doctores Administrar</h1>
+            <div class="subtitle">Alta y control de médicos registrados</div>
+          </div>
+        </div>
+        <button class="primary" onclick="toggleDoctorForm()">+ Añadir doctor</button>
+      </div>
+
+      <!-- Formulario de creación (oculto por defecto) -->
+      <div id="doctorFormWrapper" style="display:none; margin-bottom:24px;">
+        <section class="panel" style="border: 1px solid var(--accent); box-shadow: var(--card-shadow)">
+          <div class="panel-title">
+            <h2 id="doctorFormTitle">Crear doctor manualmente</h2>
+            <div class="panel-badge" style="background: var(--accent-soft); color: var(--accent)">Alta directa</div>
+          </div>
+          <form class="form-grid" id="createDoctorForm">
+            <input type="hidden" name="editId" id="editDoctorId" value="" />
+            <label><span>Nombre</span><input name="name" required /></label>
+            <label><span>Plan</span><select name="plan">
+                <option value="basic">Básico</option>
+                <option value="pro">Pro</option>
+                <option value="premium">Premium</option>
+              </select></label>
+            <label><span>Especialidad</span><input name="specialty" required /></label>
+            <label><span>CMP</span><input name="cmp" required
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')" /></label>
+            <label><span>Departamento</span><input name="department" required /></label>
+            <label><span>Provincia</span><input name="province" required /></label>
+            <label><span>Distrito</span><input name="district" required /></label>
+            <label><span>Clínica</span><input name="clinic" required /></label>
+            <label><span>Experiencia (Años)</span><input name="experience" type="number" required
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')" /></label>
+            <label><span>Precio (S/)</span><input name="price" type="number" required
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')" /></label>
+            <label><span>Email</span><input name="email" type="email" required /></label>
+            <label><span>WhatsApp</span><input name="whatsapp" pattern="9[0-9]{8}" maxlength="9" required
+                title="Debe empezar con 9 y tener 9 dígitos"
+                oninput="this.value = this.value.replace(/[^0-9]/g, '')" /></label>
+            <label><span>Enlace Google Maps</span><input name="googleMaps" required
+                placeholder="https://maps.app.goo.gl/..." /></label>
+            <label><span>Estudios Secundarios</span><input name="highSchool" required
+                placeholder="Colegio..." /></label>
+            <label><span>Estudios Universitarios</span><input name="university" required
+                placeholder="Universidad..." /></label>
+            <label><span>Imágenes del título</span><input name="titleImages" type="file" accept="image/*" multiple
+                style="padding-top:10px" /></label>
+            <label><span>Imágenes de maestrías</span><input name="mastersImages" type="file" accept="image/*" multiple
+                style="padding-top:10px" /></label>
+            <label><span>Imágenes de certificados</span><input name="certificationsImages" type="file" accept="image/*"
+                multiple style="padding-top:10px" /></label>
+            <label><span>Imagen</span><input name="image" type="file" accept="image/*"
+                style="padding-top:10px" /></label>
+            <label><span>Fin de suscripción</span><input name="subscriptionEndsAt" type="date" /></label>
+            <div class="full">
+              <span>Configura los horarios</span>
+              <div id="scheduleContainer" style="margin-top: 8px;"></div>
+              <input type="hidden" name="schedules" id="schedulesData" value="{}" />
+            </div>
+            <div class="full actions" style="margin-top:16px">
+              <button type="button" class="neutral" onclick="toggleDoctorForm()">Cancelar</button>
+              <button class="primary" type="submit">Guardar doctor</button>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <!-- Lista de doctores registrados -->
+      <section class="panel">
+        <div class="panel-title">
+          <h2>Doctores activos y suscripción</h2>
+          <div class="panel-badge">Control trimestral</div>
+        </div>
+        <div id="doctorsList"></div>
+      </section>
+    </div>
+
+
+  </div>
+
+  <script>
+    // Set dates
+    const d = new Date();
+    document.getElementById('todayDateText').textContent = d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const sWeek = new Date(d); sWeek.setDate(d.getDate() - d.getDay() + 1);
+    const eWeek = new Date(sWeek); eWeek.setDate(sWeek.getDate() + 6);
+    const dr = sWeek.getDate() + ' ' + sWeek.toLocaleString('es', { month: 'short' }) + ' - ' + eWeek.getDate() + ' ' + eWeek.toLocaleString('es', { month: 'short' }) + ' ' + eWeek.getFullYear();
+    document.getElementById('dateRangeText').textContent = dr;
+    document.getElementById('chartDateText').textContent = dr;
+
+    let globalPeriod = 'semana';
+
+    window.switchPeriod = function (period, event) {
+      globalPeriod = period;
+      document.querySelectorAll('.period-btn').forEach(btn => btn.classList.remove('active'));
+      if (event) {
+        event.currentTarget.classList.add('active');
+      } else {
+        document.querySelector(`.period-btn[onclick*="${period}"]`)?.classList.add('active');
+      }
+
+      const now = new Date();
+      let rangeText = '';
+
+      if (period === 'hoy') {
+        rangeText = now.toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+      } else if (period === 'semana') {
+        const start = new Date(now); start.setDate(now.getDate() - (now.getDay() || 7) + 1);
+        const end = new Date(start); end.setDate(start.getDate() + 6);
+        rangeText = `${start.getDate()} ${start.toLocaleString('es', { month: 'short' })} - ${end.getDate()} ${end.toLocaleString('es', { month: 'short' })} ${end.getFullYear()}`;
+      } else if (period === 'mes') {
+        rangeText = now.toLocaleString('es', { month: 'long', year: 'numeric' });
+      } else if (period === 'año') {
+        rangeText = now.getFullYear();
+      }
+
+      document.getElementById('dateRangeText').textContent = rangeText;
+      document.getElementById('chartDateText').textContent = rangeText;
+
+      const label = period === 'hoy' ? 'Citas Hoy' :
+        period === 'semana' ? 'Citas Semana' :
+          period === 'mes' ? 'Citas Mes' : 'Citas Año';
+      document.getElementById('totalPeriodLabel').textContent = label;
+
+      if (globalAppointments.length) processDashboardData();
+    };
+
+    function filterByPeriod(appointments, period) {
+      const now = new Date();
+      const todayStr = now.toISOString().split('T')[0];
+
+      return appointments.filter(app => {
+        const appDate = app.appointmentDate || (app.createdAt ? app.createdAt.split('T')[0] : todayStr);
+
+        if (period === 'hoy') {
+          return appDate === todayStr;
+        } else if (period === 'semana') {
+          // Appointments for the next 7 days from today
+          const start = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+          const end = start + (7 * 24 * 60 * 60 * 1000);
+          const appTime = new Date(appDate + 'T00:00:00').getTime();
+          return appTime >= start && appTime < end;
+        } else if (period === 'mes') {
+          const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+          const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1).getTime();
+          const appTime = new Date(appDate + 'T00:00:00').getTime();
+          return appTime >= startOfMonth && appTime < nextMonth;
+        } else if (period === 'año') {
+          const startOfYear = new Date(now.getFullYear(), 0, 1).getTime();
+          const nextYear = new Date(now.getFullYear() + 1, 0, 1).getTime();
+          const appTime = new Date(appDate + 'T00:00:00').getTime();
+          return appTime >= startOfYear && appTime < nextYear;
+        }
+        return true;
+      });
+    }
+
+    function processDashboardData() {
+      const filtered = filterByPeriod(globalAppointments, globalPeriod);
+      document.getElementById('appointmentsCount').textContent = filtered.length;
+      document.getElementById('chartTotalCount').textContent = filtered.length;
+      updateCharts(filtered);
+    }
+
+    window.switchTab = function (tabId, event) {
+      document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'))
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'))
+      document.getElementById('tab-' + tabId).classList.add('active')
+      if (event) event.currentTarget.classList.add('active')
+      if (window.innerWidth <= 768) toggleSidebar()
+    }
+
+    window.toggleSidebar = function () {
+      const sidebar = document.getElementById('sidebar')
+      const overlay = document.getElementById('sidebarOverlay')
+      sidebar.classList.toggle('open')
+      overlay.classList.toggle('open')
+    }
+
+    window.toggleDoctorForm = function () {
+      const wrapper = document.getElementById('doctorFormWrapper')
+      wrapper.style.display = wrapper.style.display === 'none' ? 'block' : 'none'
+    }
+
+    window.showToast = function (message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+
+      const icons = {
+        success: '✓',
+        error: '✕',
+        info: 'ℹ'
+      };
+
+      toast.innerHTML = `
+        <div class="toast-icon">${icons[type] || '•'}</div>
+        <div class="toast-content">${message}</div>
+      `;
+
+      container.appendChild(toast);
+
+      // Force reflow
+      toast.offsetHeight;
+      toast.classList.add('show');
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+      }, 4000);
+    }
+
+    const loginOverlay = document.getElementById('loginOverlay')
+    const loginKey = document.getElementById('loginKey')
+    const login2fa = document.getElementById('login2fa')
+
+    // Session handling
+    const checkSession = () => {
+      const savedKey = localStorage.getItem('meditrujilloAdminKey')
+      const isAuth = sessionStorage.getItem('adminAuth') === 'true'
+
+      if (savedKey && isAuth) {
+        document.body.classList.add('logged-in')
+        loginOverlay.style.display = 'none'
+        loadOverview()
+      }
+    }
+
+    window.verifyKey = () => {
+      const key = loginKey.value.trim()
+      if (!key) return showToast('Ingresa la Admin Key', 'error')
+
+      // Save key early for potential background load
+      localStorage.setItem('meditrujilloAdminKey', key)
+
+      document.getElementById('step-key').classList.remove('active')
+      document.getElementById('step-2fa').classList.add('active')
+      login2fa.focus()
+    }
+
+    window.verify2fa = () => {
+      const code = login2fa.value.trim()
+      if (code === '123456') {
+        sessionStorage.setItem('adminAuth', 'true')
+        document.body.classList.add('logged-in')
+        loginOverlay.style.display = 'none'
+        loadOverview()
+        showToast('Bienvenido, Administrador', 'success')
+      } else {
+        showToast('Código 2FA incorrecto', 'error')
+        login2fa.value = ''
+      }
+    }
+
+    window.backToKey = () => {
+      document.getElementById('step-2fa').classList.remove('active')
+      document.getElementById('step-key').classList.add('active')
+    }
+
+    window.logout = () => {
+      if (!confirm('¿Cerrar sesión?')) return
+      sessionStorage.removeItem('adminAuth')
+      document.body.classList.remove('logged-in')
+      loginOverlay.style.display = 'flex'
+      document.getElementById('step-2fa').classList.remove('active')
+      document.getElementById('step-key').classList.add('active')
+      loginKey.value = ''
+      login2fa.value = ''
+    }
+
+    // Auto-load on startup
+    document.addEventListener('DOMContentLoaded', checkSession)
+
+    // Globals
+    let globalAppointments = [];
+    let globalDoctors = [];
+
+    // Removed old key listeners
+
+    // Doctor creation form logic
+    const createDoctorForm = document.getElementById('createDoctorForm')
+    createDoctorForm.addEventListener('submit', async (event) => {
+      event.preventDefault()
+      try {
+        const data = new FormData(createDoctorForm)
+        const payload = Object.fromEntries(data.entries())
+        const editId = payload.editId
+        delete payload.editId
+
+        payload.experience = Number(payload.experience || 0)
+        payload.price = Number(payload.price || 0)
+        payload.availableNow = true
+        payload.autoRenew = false
+        payload.schedules = JSON.parse(document.getElementById('schedulesData').value || '{}')
+
+        if (data.get('image')?.size > 0) payload.image = await readImageAsDataUrl(data.get('image'), '/images/doctor-placeholder.svg')
+        if (data.getAll('titleImages').some(f => f.size > 0)) payload.titleImages = await readImagesAsDataUrls(data.getAll('titleImages'))
+        if (data.getAll('mastersImages').some(f => f.size > 0)) payload.mastersImages = await readImagesAsDataUrls(data.getAll('mastersImages'))
+        if (data.getAll('certificationsImages').some(f => f.size > 0)) payload.certificationsImages = await readImagesAsDataUrls(data.getAll('certificationsImages'))
+
+        const method = editId ? 'PUT' : 'POST'
+        const url = editId ? `/api/admin/doctors/${editId}` : '/api/admin/doctors'
+
+        await adminRequest(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        })
+
+        createDoctorForm.reset()
+        document.getElementById('editDoctorId').value = ''
+        document.getElementById('doctorFormTitle').textContent = 'Doctores activos y suscripción'
+        window.resetSchedules()
+        loadOverview()
+        toggleDoctorForm()
+        alert(editId ? 'Perfil actualizado exitosamente' : 'Doctor creado exitosamente')
+      } catch (error) {
+        console.error(error)
+        alert('Error al guardar doctor: ' + error.message)
+      }
+    })
+
+    function readImageAsDataUrl(file, fallback = '') {
+      if (!file || file.size <= 0) return Promise.resolve(fallback)
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result)
+        reader.onerror = () => reject(reader.error)
+        reader.readAsDataURL(file)
+      })
+    }
+
+    function readImagesAsDataUrls(files) {
+      return Promise.all((files || []).filter((file) => file && file.size > 0).map((file) => readImageAsDataUrl(file, '')))
+    }
+
+    const scheduleContainer = document.getElementById('scheduleContainer')
+    const schedulesData = document.getElementById('schedulesData')
+    const days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']
+    const scheduleHours = Array.from({ length: 18 }, (_, i) => String(i + 6).padStart(2, '0') + ':00')
+
+    let schedulesState = {}
+
+    window.resetSchedules = () => {
+      schedulesState = days.reduce((acc, d) => ({ ...acc, [d]: [] }), {})
+      renderSchedules()
+    }
+
+    function renderSchedules() {
+      scheduleContainer.innerHTML = days.map(day => {
+        const enabled = schedulesState[day].length > 0
+        const slotsHtml = enabled ? scheduleHours.map(slot => {
+          const active = schedulesState[day].includes(slot)
+          return `<button type="button" class="slot-btn ${active ? 'active' : ''}" onclick="toggleSlot('${day}', '${slot}')">${slot}</button>`
+        }).join('') : ''
+
+        return `
+          <div class="schedule-day-panel">
+            <div class="schedule-day-header">
+              <div class="flex-center">
+                <button type="button" class="toggle-btn ${enabled ? 'on' : ''}" onclick="toggleDay('${day}')">
+                  <span class="toggle-knob"></span>
+                </button>
+                <span style="font-weight:600; font-size: 14px; color: var(--text-main)">${day}</span>
+              </div>
+              ${!enabled ? `<span style="color: var(--text-muted); font-weight:600; font-size:12px">No disponible</span>` : ''}
+            </div>
+            ${enabled ? `<div class="schedule-slots">${slotsHtml}</div>` : ''}
+          </div>
+        `
+      }).join('')
+      schedulesData.value = JSON.stringify(schedulesState)
+    }
+
+    window.toggleDay = (day) => {
+      if (schedulesState[day].length > 0) {
+        schedulesState[day] = []
+      } else {
+        schedulesState[day] = ['08:00', '09:00']
+      }
+      renderSchedules()
+    }
+
+    window.toggleSlot = (day, slot) => {
+      if (schedulesState[day].includes(slot)) {
+        schedulesState[day] = schedulesState[day].filter(s => s !== slot)
+      } else {
+        schedulesState[day] = [...schedulesState[day], slot].sort()
+      }
+      renderSchedules()
+    }
+
+    window.resetSchedules()
+
+    window.editDoctor = (id) => {
+      const doc = globalDoctors.find(d => d.id === id)
+      if (!doc) return alert('Doctor no encontrado')
+
+      const form = document.getElementById('createDoctorForm')
+      document.getElementById('editDoctorId').value = doc.id
+      document.getElementById('doctorFormTitle').textContent = 'Editar Perfil de Doctor'
+
+      const fields = ['name', 'plan', 'specialty', 'cmp', 'department', 'province', 'district', 'clinic', 'experience', 'price', 'email', 'whatsapp', 'googleMaps', 'highSchool', 'university', 'subscriptionEndsAt']
+      fields.forEach(f => {
+        if (form.elements[f] && doc[f] !== undefined) form.elements[f].value = doc[f]
+      })
+
+      // Load schedules
+      if (doc.schedules && Object.keys(doc.schedules).length > 0) {
+        schedulesState = { ...days.reduce((acc, d) => ({ ...acc, [d]: [] }), {}), ...doc.schedules }
+      } else {
+        window.resetSchedules()
+      }
+      renderSchedules()
+
+      const wrapper = document.getElementById('doctorFormWrapper')
+      if (wrapper.style.display === 'none') {
+        wrapper.style.display = 'block'
+      }
+      wrapper.scrollIntoView({ behavior: 'smooth' })
+    }
+
+    const blockEmailForm = document.getElementById('blockEmailForm')
+    blockEmailForm.addEventListener('submit', async (event) => {
+      event.preventDefault()
+      const data = new FormData(blockEmailForm)
+      await adminRequest('/api/admin/emails/block', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: data.get('email') })
+      })
+      blockEmailForm.reset()
+      loadOverview()
+    })
+
+    // Theme Toggle Logic
+    const body = document.body
+    const themeToggle = document.getElementById('themeToggle')
+    const loginThemeToggle = document.getElementById('loginThemeToggle')
+
+    function updateThemeUI(isDark) {
+      const sun = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2"></path>
+          <path d="M12 20v2"></path>
+          <path d="m4.93 4.93 1.41 1.41"></path>
+          <path d="m17.66 17.66 1.41 1.41"></path>
+          <path d="M2 12h2"></path>
+          <path d="M20 12h2"></path>
+          <path d="m6.34 17.66-1.41 1.41"></path>
+          <path d="m19.07 4.93-1.41 1.41"></path>
+        </svg>`
+      const moon = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>`
+
+      if (themeToggle) {
+        themeToggle.innerHTML = isDark ? `${sun} Modo Claro` : `${moon} Modo Oscuro`
+      }
+      if (loginThemeToggle) {
+        loginThemeToggle.innerHTML = isDark ? sun : moon
+      }
+    }
+
+    // Load saved theme
+    const isDark = localStorage.getItem('adminTheme') === 'dark'
+    if (isDark) body.classList.add('dark')
+    updateThemeUI(isDark)
+
+    const toggleFn = () => {
+      body.classList.toggle('dark')
+      const dark = body.classList.contains('dark')
+      localStorage.setItem('adminTheme', dark ? 'dark' : 'light')
+      updateThemeUI(dark)
+    }
+
+    if (themeToggle) themeToggle.addEventListener('click', toggleFn)
+    if (loginThemeToggle) loginThemeToggle.addEventListener('click', toggleFn)
+
+    async function adminRequest(path, options = {}) {
+      try {
+        const key = localStorage.getItem('meditrujilloAdminKey') || ''
+        const response = await fetch(path, {
+          ...options,
+          headers: {
+            ...(options.headers || {}),
+            'x-admin-key': key
+          }
+        })
+        if (!response.ok) {
+          const text = await response.text()
+          const error = new Error(text || `Error ${response.status}`)
+          error.status = response.status
+          throw error
+        }
+        return await response.json()
+      } catch (err) {
+        if (err.status === 401 || err.status === 403 || err.message.includes('401') || err.message.includes('Forbidden')) {
+          logout()
+        }
+        throw err
+      }
+    }
+
+    async function loadOverview() {
+      try {
+        const data = await adminRequest('/api/admin/overview')
+
+        document.getElementById('doctorsCount').textContent = data.doctors.filter((item) => item.status === 'active').length
+        document.getElementById('pendingCount').textContent = data.pending.length
+
+        globalAppointments = data.appointments;
+        globalDoctors = data.doctors;
+
+        processDashboardData();
+
+        // Populate doctor filter
+        const doctorFilter = document.getElementById('doctorFilter')
+        const currentFilter = doctorFilter.value;
+        doctorFilter.innerHTML = '<option value="">Todas las citas</option>' +
+          data.doctors.map(d => `<option value="${d.id}">${d.name}</option>`).join('');
+        doctorFilter.value = currentFilter;
+
+        // Count today's appointments accurately (Summary Card always shows real TODAY)
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const todayCount = globalAppointments.filter(app => {
+          if (!app.createdAt) return false;
+          return new Date(app.createdAt).getTime() >= startOfToday;
+        }).length;
+
+        document.getElementById('todayAppointmentsCount').textContent = todayCount;
+        document.getElementById('todayDateText').textContent = now.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+        document.getElementById('doctorsCount').textContent = data.doctors.length;
+        document.getElementById('pendingCount').textContent = data.pending.length;
+
+        document.getElementById('pendingBadge').textContent = `${data.pending.length} nuevos`
+        document.getElementById('pendingList').innerHTML = data.pending.length ? `<div class="content-list">${data.pending.map(renderPending).join('')}</div>` : emptyState('No hay médicos pendientes.')
+        document.getElementById('doctorsList').innerHTML = data.doctors.length ? `<div class="content-list">${data.doctors.map(renderDoctor).join('')}</div>` : emptyState('No hay doctores creados.')
+        document.getElementById('blockedList').innerHTML = data.blockedUsers.length ? data.blockedUsers.map(renderBlockedUid).join('') : emptyState('Sin UID bloqueados.')
+        document.getElementById('blockedEmailsList').innerHTML = data.blockedEmails.length ? data.blockedEmails.map(renderBlockedEmail).join('') : emptyState('Sin correos bloqueados.')
+        document.getElementById('notificationsList').innerHTML = data.notifications.length ? `<div class="content-list">${data.notifications.slice(0, 8).map(renderNotification).join('')}</div>` : emptyState('No hay notificaciones registradas.')
+
+        document.getElementById('pendingSidebarBadge').textContent = data.pending.length
+        document.getElementById('pendingSidebarBadge').style.display = data.pending.length ? 'inline-flex' : 'none'
+
+        filterAppointments();
+        bindActions()
+      } catch (error) {
+        alert('Error al cargar datos: ' + error.message + '\n\nVerifica que la Admin Key sea correcta y el servidor esté corriendo.')
+        console.error('Overview Error:', error)
+      }
+    }
+
+    function filterAppointments() {
+      const doctorId = document.getElementById('doctorFilter').value;
+      // Only show active (booked) appointments — cancelled ones are archived internally
+      const active = globalAppointments.filter(a => (a.status || 'booked') === 'booked');
+      const filtered = doctorId ? active.filter(a => a.doctorId === doctorId) : active;
+      document.getElementById('appointmentsList').innerHTML = filtered.length ? `<div class="content-list">${filtered.map(renderAppointment).join('')}</div>` : emptyState(doctorId ? 'Este doctor no tiene citas activas.' : 'No hay reservas activas.');
+      bindActions();
+    }
+    window.filterAppointments = filterAppointments;
+
+    function updateCharts(appointments) {
+      const days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+      const counts = { Lunes: { c: 0, x: 0 }, Martes: { c: 0, x: 0 }, Miercoles: { c: 0, x: 0 }, Jueves: { c: 0, x: 0 }, Viernes: { c: 0, x: 0 }, Sabado: { c: 0, x: 0 }, Domingo: { c: 0, x: 0 } };
+
+      appointments.forEach(app => {
+        const rawDay = (app.day || '').normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        const map = { lunes: 'Lunes', martes: 'Martes', miercoles: 'Miercoles', jueves: 'Jueves', viernes: 'Viernes', sabado: 'Sabado', domingo: 'Domingo' };
+        const key = map[rawDay];
+        if (key) {
+          const status = (app.status || 'confirmed').toLowerCase();
+          if (status === 'cancelled' || status === 'released') counts[key].x++;
+          else counts[key].c++;
+        }
+      });
+
+      const max = Math.max(...Object.values(counts).map(v => v.c + v.x), 1);
+      const todayRaw = new Date().toLocaleDateString('es-ES', { weekday: 'long' }).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const todayKey = { lunes: 'Lunes', martes: 'Martes', miercoles: 'Miercoles', jueves: 'Jueves', viernes: 'Viernes', sabado: 'Sabado', domingo: 'Domingo' }[todayRaw];
+
+      days.forEach(day => {
+        const bar = document.getElementById(`bar-${day}`);
+        if (bar) {
+          const { c, x } = counts[day];
+          const total = c + x;
+          const percentage = total > 0 ? (total / max) * 90 + 10 : 0;
+          bar.style.height = `${percentage}%`;
+          bar.classList.toggle('highlight', day === todayKey);
+
+          const confPct = total > 0 ? (c / total) * 100 : 0;
+          const cancPct = total > 0 ? (x / total) * 100 : 0;
+
+          bar.innerHTML = `
+            <div class="bar-segments-wrapper">
+              <div class="bar-segment bar-cancelled" style="height: ${cancPct}%"></div>
+              <div class="bar-segment bar-confirmed" style="height: ${confPct}%"></div>
+            </div>
+          `;
+
+          bar.setAttribute('data-tooltip', `${c} Confirmadas • ${x} Canceladas`);
+        }
+      });
+    }
+
+    function renderPending(item) {
+      const location = [item.department, item.province, item.district].filter(Boolean).join(', ')
+      return `
+        <div class="info-card pending-card" style="border-left: 4px solid #f59e0b">
+          <div class="info-card-header">
+            <div>
+              <div class="info-card-title">${escapeHtml(item.fullName || 'Solicitud sin nombre')}</div>
+              <div class="info-card-subtitle" style="color: #f59e0b; font-weight: 700">SOLICITUD DE REGISTRO</div>
+            </div>
+            <span class="status-pill wait">Esperando Aprobación</span>
+          </div>
+          <div class="info-grid">
+            <div class="info-pill"><span>Codigo</span><strong>${escapeHtml(item.applicationCode || item.id || 'N/D')}</strong></div>
+            <div class="info-pill"><span>Plan</span><strong>${escapeHtml(prettyPlan(item.plan))}</strong></div>
+            <div class="info-pill"><span>CMP</span><strong>${escapeHtml(item.cmp || 'N/D')}</strong></div>
+            <div class="info-pill"><span>Contacto</span><strong>${escapeHtml(item.whatsapp || item.email || 'N/D')}</strong></div>
+          </div>
+          <details class="details-box">
+            <summary>Ver ficha completa</summary>
+            <div class="details-content">
+              <div>Ubicacion: ${escapeHtml(location || 'No indicada')}</div>
+              <div>Email: ${escapeHtml(item.email || 'N/D')}</div>
+              <div>Horarios: ${escapeHtml(formatSchedules(item.schedules))}</div>
+              ${item.photoUrl || item.photoPath ? `<a class="link" href="${escapeAttr(item.photoUrl || item.photoPath)}" target="_blank">Abrir foto enviada</a>` : ''}
+            </div>
+          </details>
+          <div class="card-actions">
+            <button class="primary soft-button" data-approve="${escapeAttr(item.id)}">Crear doctor</button>
+            <button class="warn soft-button" data-reject="${escapeAttr(item.id)}">Rechazar</button>
+          </div>
+        </div>
+      `
+    }
+
+    function renderDoctor(item) {
+      const renewalClass = item.renewalState === 'expired' ? 'state-expired' : item.renewalState === 'due_soon' ? 'state-due' : 'state-active'
+      const renewalText = item.renewalState === 'expired' ? 'Expirado' : item.renewalState === 'due_soon' ? 'Renovar pronto' : 'Activo'
+      const statusClass = item.status === 'active' ? 'ok' : 'stop'
+      return `
+        <div class="info-card doctor-card">
+          <div class="info-card-header">
+            <div style="display:flex; gap:14px; align-items:flex-start; min-width:0">
+              <img src="${escapeAttr(item.image || '/images/doctor-placeholder.svg')}" style="width:54px; height:54px; border-radius:14px; object-fit:cover; object-position:top" />
+              <div style="min-width:0">
+                <div class="info-card-title">${escapeHtml(item.name || 'Doctor sin nombre')}</div>
+                <div class="info-card-subtitle">${escapeHtml(item.specialty || 'Especialidad')} - ${escapeHtml(item.clinic || 'Clinica')}</div>
+                <div class="row-meta">
+                  <span class="chip plan-${escapeAttr(item.plan)}">${escapeHtml(prettyPlan(item.plan))}</span>
+                  <span class="chip ${renewalClass}">${escapeHtml(renewalText)}</span>
+                </div>
+              </div>
+            </div>
+            <span class="status-pill ${statusClass}">${item.status === 'active' ? 'Activo' : 'Inactivo'}</span>
+          </div>
+          <div class="info-grid">
+            <div class="info-pill"><span>Suscripcion</span><strong>${escapeHtml(item.subscriptionStartedAt || 'N/D')} -> ${escapeHtml(item.subscriptionEndsAt || 'N/D')}</strong></div>
+            <div class="info-pill"><span>Dias restantes</span><strong>${escapeHtml(String(item.daysLeft ?? 'N/D'))}</strong></div>
+          </div>
+          <div class="card-actions">
+            <button class="secondary soft-button" data-renew="${escapeAttr(item.id)}">Renovar</button>
+            <button class="primary soft-button" onclick="editDoctor('${escapeAttr(item.id)}')">Editar</button>
+            <button class="neutral soft-button" data-toggle-status="${escapeAttr(item.id)}">${item.status === 'active' ? 'Desactivar' : 'Activar'}</button>
+            <button class="warn soft-button" data-delete-doctor="${escapeAttr(item.id)}">Borrar</button>
+          </div>
+        </div>
+      `
+    }
+
+    function formatAppointmentDate(appointmentDate, createdAt) {
+      // Use appointmentDate first, fallback to createdAt for legacy records
+      const raw = appointmentDate || createdAt || ''
+      if (!raw) return ''
+      // Handles both "YYYY-MM-DD" and "YYYY-MM-DDTHH:mm:ss.sssZ" formats
+      const d = new Date(raw.length === 10 ? raw + 'T12:00:00' : raw)
+      if (isNaN(d.getTime())) return ''
+      const dd = String(d.getDate()).padStart(2, '0')
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+      const yyyy = d.getFullYear()
+      return `${dd}/${mm}/${yyyy}`
+    }
+
+    function renderAppointment(item) {
+      const uid = item.patient?.uid || ''
+      const email = item.patient?.email || ''
+      const patientName = item.patient?.nombres ? `${item.patient.nombres} ${item.patient.apellidos || ''}`.trim() : email || 'Paciente'
+      const doctor = doctorName(item.doctorId)
+      const formattedDate = formatAppointmentDate(item.appointmentDate, item.createdAt)
+      return `
+        <div class="info-card appointment-card">
+          <div class="info-card-header">
+            <div>
+              <div class="info-card-title">${escapeHtml(patientName)}</div>
+              <div class="info-card-subtitle">${escapeHtml(item.day || 'Día no indicado')}${formattedDate ? ` &bull; ${formattedDate}` : ''} &bull; ${escapeHtml(item.slot || 'Hora pendiente')}</div>
+            </div>
+            <span class="status-pill info">Activa</span>
+          </div>
+          <div class="info-grid">
+            <div class="info-pill"><span>Doctor</span><strong>${escapeHtml(doctor)}</strong></div>
+            <div class="info-pill"><span>Email paciente</span><strong>${escapeHtml(email || 'No registrado')}</strong></div>
+          </div>
+          <details class="details-box">
+            <summary>Ver datos tecnicos</summary>
+            <div class="details-content">
+              <div class="technical-text">Cita ID: ${escapeHtml(item.id || 'N/D')}\nDoctor ID: ${escapeHtml(item.doctorId || 'N/D')}\nUID: ${escapeHtml(uid || 'N/D')}\nFecha cita: ${escapeHtml(formattedDate || 'N/D')}\nappointmentDate (raw): ${escapeHtml(item.appointmentDate || '(vacio)')}\nCreado: ${escapeHtml(item.createdAt ? new Date(item.createdAt).toLocaleString('es-PE') : 'N/D')}\nMotivo: ${escapeHtml(item.patient?.motivo || 'N/D')}</div>
+            </div>
+          </details>
+          <div class="card-actions">
+            <button class="secondary soft-button" data-release="${escapeAttr(item.id)}" data-release-uid="${escapeAttr(uid)}">Liberar cita</button>
+            ${uid ? `<button class="warn soft-button" data-block="${escapeAttr(uid)}">Bloquear UID</button>` : ''}
+          </div>
+        </div>
+      `
+    }
+
+    function renderBlockedUid(item) {
+      return `
+        <div class="info-card" style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding: 12px 16px">
+          <div>
+            <div class="info-card-title" style="font-size:14px">${escapeHtml(item.uid)}</div>
+            <div class="info-card-subtitle">${formatDateTime(item.createdAt)}</div>
+          </div>
+          <button class="warn soft-button icon-btn" data-unblock-uid="${escapeAttr(item.uid)}" title="Desbloquear" style="width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:8px">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
+          </button>
+        </div>
+      `
+    }
+
+    function renderBlockedEmail(item) {
+      return `
+        <div class="info-card" style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding: 12px 16px">
+          <div>
+            <div class="info-card-title" style="font-size:14px">${escapeHtml(item.email)}</div>
+            <div class="info-card-subtitle">${formatDateTime(item.createdAt)}</div>
+          </div>
+          <button class="warn soft-button icon-btn" data-unblock-email="${escapeAttr(item.email)}" title="Desbloquear" style="width:32px; height:32px; padding:0; display:flex; align-items:center; justify-content:center; border-radius:8px">✕</button>
+        </div>
+      `
+    }
+
+    function renderNotification(item) {
+      const parsed = parseNotification(item.message || '')
+      const delivered = Boolean(item.delivered)
+      return `
+        <div class="info-card notification-card">
+          <div class="info-card-header">
+            <div>
+              <div class="info-card-title">${escapeHtml(parsed.title)}</div>
+              <div class="info-card-subtitle">${escapeHtml(item.target || 'Destino no indicado')} - ${formatDateTime(item.createdAt)}</div>
+            </div>
+            <span class="status-pill ${delivered ? 'ok' : 'wait'}">${delivered ? 'Enviado' : 'Pendiente'}</span>
+          </div>
+          <div class="info-grid">
+            <div class="info-pill"><span>Tipo</span><strong>${escapeHtml(item.mode || 'Auditoria')}</strong></div>
+            <div class="info-pill"><span>Resumen</span><strong>${escapeHtml(parsed.summary)}</strong></div>
+          </div>
+          <details class="details-box">
+            <summary>Ver mensaje completo</summary>
+            <div class="details-content">
+              <div class="technical-text">${escapeHtml(item.message || 'Sin mensaje')}</div>
+            </div>
+          </details>
+        </div>
+      `
+    }
+
+    function doctorName(id) {
+      const doctor = globalDoctors.find((item) => item.id === id)
+      return doctor?.name || id || 'N/D'
+    }
+
+    function parseNotification(message) {
+      const compact = message.replace(/\s+/g, ' ').trim()
+      const name = matchValue(compact, /(?:Nombre|Nombres):\s*([^-*]+)/i)
+      const doctor = matchValue(compact, /Doctor:\s*([^-*]+)/i)
+      const specialty = matchValue(compact, /Especialidad:\s*([^-*]+)/i)
+      const date = matchValue(compact, /Fecha:\s*([^-*]+)/i)
+      const title = name ? `Solicitud de ${name}` : doctor ? `Solicitud para ${doctor}` : compact.slice(0, 64) || 'Notificacion WhatsApp'
+      const summaryParts = [doctor, specialty, date].filter(Boolean)
+      return {
+        title,
+        summary: summaryParts.length ? summaryParts.join(' - ') : compact.slice(0, 110) || 'Sin resumen'
+      }
+    }
+
+    function matchValue(text, regex) {
+      const match = text.match(regex)
+      return match ? match[1].trim() : ''
+    }
+
+    function formatDateTime(value) {
+      if (!value) return 'Fecha no disponible'
+      const date = new Date(value)
+      if (Number.isNaN(date.getTime())) return escapeHtml(String(value))
+      return date.toLocaleString('es-PE', { dateStyle: 'medium', timeStyle: 'short' })
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[char]))
+    }
+
+    function escapeAttr(value) {
+      return escapeHtml(value)
+    }
+
+    function bindActions() {
+      const handleAction = async (btn, actionFn) => {
+        const originalHtml = btn.innerHTML
+        btn.disabled = true
+        btn.style.opacity = '0.5'
+        try {
+          await actionFn()
+          showToast('Acción completada con éxito', 'success')
+          await loadOverview()
+        } catch (err) {
+          console.error(err)
+          showToast('Error: ' + err.message, 'error')
+        } finally {
+          btn.disabled = false
+          btn.style.opacity = '1'
+        }
+      }
+
+      document.querySelectorAll('[data-approve]').forEach((button) => {
+        button.onclick = () => handleAction(button, () => adminRequest(`/api/admin/pending/${button.dataset.approve}/approve`, { method: 'POST' }))
+      })
+      document.querySelectorAll('[data-reject]').forEach((button) => {
+        button.onclick = () => handleAction(button, () => adminRequest(`/api/admin/pending/${button.dataset.reject}/reject`, { method: 'POST' }))
+      })
+      document.querySelectorAll('[data-release]').forEach((button) => {
+        button.onclick = () => handleAction(button, async () => {
+          // 1. Cancel the appointment (marks it as cancelled — stays in DB for records)
+          await adminRequest(`/api/admin/appointments/${button.dataset.release}/release`, { method: 'POST' })
+          // 2. Automatically block the UID that made the reservation
+          const uid = button.dataset.releaseUid
+          if (uid) {
+            await adminRequest('/api/admin/users/block', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ uid })
+            })
+          }
+        })
+      })
+      document.querySelectorAll('[data-block]').forEach((button) => {
+        if (!button.dataset.block) return
+        button.onclick = () => handleAction(button, () => adminRequest('/api/admin/users/block', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ uid: button.dataset.block })
+        }))
+      })
+      document.querySelectorAll('[data-renew]').forEach((button) => {
+        button.onclick = () => handleAction(button, () => adminRequest(`/api/admin/doctors/${button.dataset.renew}/renew`, { method: 'POST' }))
+      })
+      document.querySelectorAll('[data-toggle-status]').forEach((button) => {
+        button.onclick = () => handleAction(button, () => adminRequest(`/api/admin/doctors/${button.dataset.toggleStatus}/toggle-status`, { method: 'POST' }))
+      })
+      document.querySelectorAll('[data-delete-doctor]').forEach((button) => {
+        button.onclick = () => {
+          if (!confirm('¿Eliminar este doctor del panel?')) return
+          handleAction(button, () => adminRequest(`/api/admin/doctors/${button.dataset.deleteDoctor}`, { method: 'DELETE' }))
+        }
+      })
+      document.querySelectorAll('[data-unblock-uid]').forEach((button) => {
+        button.onclick = () => handleAction(button, () => adminRequest(`/api/admin/users/${button.dataset.unblockUid}/unblock`, { method: 'POST' }))
+      })
+      document.querySelectorAll('[data-unblock-email]').forEach((button) => {
+        button.onclick = () => handleAction(button, () => adminRequest('/api/admin/emails/unblock', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: button.dataset.unblockEmail })
+        }))
+      })
+    }
+
+    function prettyPlan(plan) { return ({ basic: 'Básico', pro: 'Pro', premium: 'Premium' }[plan] || plan) }
+
+    function formatSchedules(schedules) {
+      const parts = Object.entries(schedules || {})
+        .filter(([, slots]) => Array.isArray(slots) && slots.length)
+        .map(([day, slots]) => `${day}: ${slots.length} turnos`)
+      return parts.length ? parts.join(' | ') : 'No definidos'
+    }
+
+    function emptyState(text) { return `<div class="empty" style="color: var(--text-muted)">${text}</div>` }
+  </script>
+</body>
+
+</html>

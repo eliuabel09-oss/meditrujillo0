@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MedicoTrujillo | Tu salud en las mejores manos</title>
+    <meta name="description" content="Encuentra los mejores médicos especialistas en Trujillo. Reserva citas online, atención inmediata y orientación médica inteligente en La Libertad." />
+    <meta name="keywords" content="médicos trujillo, especialistas trujillo, salud la libertad, citas médicas online trujillo" />
+    
+    <link rel="preload" href="/images/logoclinica.webp" as="image" fetchpriority="high" />
+    <link rel="preconnect" href="https://meditrujillo0.onrender.com" />
+    <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Inter:wght@400;600;700&display=optional" rel="stylesheet" />
+    <link rel="icon" type="image/webp" href="/images/logoclinica.webp" />
+
+    <script>
+      // Parallel API fetch - Minimal impact on main thread
+      (function() {
+        const API = 'https://meditrujillo0.onrender.com/api/doctors';
+        const f = u => fetch(u).then(r => r.ok ? r.json() : null).catch(() => null);
+        window.__FEATURED_DOCTORS_PROMISE__ = f(API + '/featured');
+        window.__DOCTORS_PROMISE__ = f(API);
+      })();
+    </script>
+  </head>
+  <body class="bg-slate-50">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

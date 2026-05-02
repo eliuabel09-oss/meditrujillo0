@@ -1,0 +1,310 @@
+[
+  {
+    "id": "appt-1777254536928-crgxpd",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Lunes",
+    "slot": "08:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "nombres": "eliu",
+      "apellidos": "diaz",
+      "dni": "61095087",
+      "edad": "19",
+      "telefono": "939339393",
+      "correo": "eliuabel09@gmail.com",
+      "direccion": "sta rosa san mateo 590",
+      "motivo": "aa"
+    },
+    "status": "booked",
+    "createdAt": "2026-04-27T01:48:56.928Z",
+    "appointmentDate": "2026-05-05"
+  },
+  {
+    "id": "appt-1777238969320-mwmi8m",
+    "doctorId": "doc-1777238773843-0471rh",
+    "day": "Lunes",
+    "slot": "09:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "nombres": "eliu",
+      "apellidos": "diaz",
+      "dni": "61095087",
+      "edad": "19",
+      "telefono": "919119190",
+      "correo": "eliuabel09@gmail.com",
+      "direccion": "sta rosa san mateo 590",
+      "motivo": "a"
+    },
+    "status": "booked",
+    "createdAt": "2026-04-26T21:29:29.320Z",
+    "appointmentDate": "2026-05-05"
+  },
+  {
+    "id": "appt-1777232697544-mbsnv8",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Martes",
+    "slot": "08:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "nombres": "eliu",
+      "apellidos": "diaz",
+      "dni": "61095087",
+      "edad": "19",
+      "telefono": "943269045",
+      "correo": "eliuabel09@gmail.com",
+      "direccion": "sta rosa san mateo 590",
+      "motivo": "aaaaa"
+    },
+    "status": "booked",
+    "createdAt": "2026-04-26T19:44:57.544Z",
+    "appointmentDate": "2026-05-06"
+  },
+  {
+    "id": "appt-1777230925813-rthnaz",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Miercoles",
+    "slot": "09:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "nombres": "eliu",
+      "apellidos": "diaz",
+      "dni": "61095077",
+      "edad": "19",
+      "telefono": "949021141",
+      "correo": "eliuabel09@gmail.com",
+      "direccion": "sta rosa san mateo 590",
+      "motivo": "a"
+    },
+    "status": "booked",
+    "createdAt": "2026-04-26T19:15:25.813Z",
+    "appointmentDate": "2026-05-07"
+  },
+  {
+    "id": "appt-1777230697094-wn1xc6",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Martes",
+    "slot": "09:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "nombres": "eliu",
+      "apellidos": "diaz",
+      "dni": "61095076",
+      "edad": "19",
+      "telefono": "939393939",
+      "correo": "eliuabel09@gmail.com",
+      "direccion": "sta rosa san mateo 590",
+      "motivo": "a"
+    },
+    "status": "booked",
+    "createdAt": "2026-04-26T19:11:37.094Z",
+    "appointmentDate": "2026-05-06"
+  },
+  {
+    "id": "appt-1777230644935-0ghafl",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Martes",
+    "slot": "08:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "nombres": "eliu",
+      "apellidos": "diaz",
+      "dni": "19190109",
+      "edad": "19",
+      "telefono": "919190191",
+      "correo": "eliuabel09@gmail.com",
+      "direccion": "sta rosa san mateo 590",
+      "motivo": "a"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T19:10:44.935Z",
+    "appointmentDate": "2026-05-06"
+  },
+  {
+    "id": "appt-1777230509675-0z1pto",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Lunes",
+    "slot": "08:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "nombres": "eliu",
+      "apellidos": "diaz",
+      "dni": "61095087",
+      "edad": "19",
+      "telefono": "949021141",
+      "correo": "eliuabel09@gmail.com",
+      "direccion": "sta rosa san mateo 590",
+      "motivo": "aa"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T19:08:29.675Z",
+    "appointmentDate": "2026-05-05"
+  },
+  {
+    "id": "appt-1777229987532-72ajn9",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Lunes",
+    "slot": "09:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "nombres": "eliu",
+      "apellidos": "diaz",
+      "dni": "61095088",
+      "edad": "94",
+      "telefono": "949021141",
+      "correo": "eliuabel09@gmail.com",
+      "direccion": "sta rosa san mateo 590",
+      "motivo": "a"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T18:59:47.532Z",
+    "appointmentDate": "2026-05-05"
+  },
+  {
+    "id": "appt-1777229531996-yeazzn",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Martes",
+    "slot": "09:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "name": "Eliu Diaz"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T18:52:11.996Z",
+    "appointmentDate": "2026-05-06"
+  },
+  {
+    "id": "appt-1777192667955-kn5yaj",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Miercoles",
+    "slot": "08:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "name": "Eliu Diaz"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T08:37:47.955Z",
+    "appointmentDate": "2026-05-07"
+  },
+  {
+    "id": "appt-1777191806531-f8vur0",
+    "doctorId": "doc-1777191763055-2fakgk",
+    "day": "Miercoles",
+    "slot": "09:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "name": "Eliu Diaz"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T08:23:26.531Z",
+    "appointmentDate": "2026-05-07"
+  },
+  {
+    "id": "appt-1777190175587-j6dbqb",
+    "doctorId": "doc-2",
+    "day": "Lunes",
+    "slot": "16:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "name": "Eliu Diaz"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T07:56:15.587Z",
+    "appointmentDate": "2026-05-05"
+  },
+  {
+    "id": "appt-1777189750053-4d0yb7",
+    "doctorId": "doc-2",
+    "day": "Martes",
+    "slot": "12:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "name": "Eliu Diaz"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T07:49:10.056Z",
+    "appointmentDate": "2026-05-06"
+  },
+  {
+    "id": "appt-1777189412491-f5rc88",
+    "doctorId": "doc-2",
+    "day": "Martes",
+    "slot": "09:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "name": "Eliu Diaz"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T07:43:32.491Z",
+    "appointmentDate": "2026-05-06"
+  },
+  {
+    "id": "appt-1777189405176-m24deo",
+    "doctorId": "doc-2",
+    "day": "Miercoles",
+    "slot": "18:00",
+    "patient": {
+      "uid": "xG4JvcgNbIhY2YkoLcwbN5Tz9Di2",
+      "email": "eliuabel09@gmail.com",
+      "name": "Eliu Diaz"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T07:43:25.176Z",
+    "appointmentDate": "2026-05-07"
+  },
+  {
+    "id": "appt-1777179850125-7tyvdc",
+    "doctorId": "doc-2",
+    "day": "Viernes",
+    "slot": "17:00",
+    "patient": {
+      "uid": "demo-user",
+      "email": "paciente.demo@meditrujillo.pe",
+      "name": "Paciente Demo"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T05:04:10.125Z",
+    "appointmentDate": "2026-05-02"
+  },
+  {
+    "id": "appt-1777179848385-dzykww",
+    "doctorId": "doc-2",
+    "day": "Miercoles",
+    "slot": "10:00",
+    "patient": {
+      "uid": "demo-user",
+      "email": "paciente.demo@meditrujillo.pe",
+      "name": "Paciente Demo"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T05:04:08.385Z",
+    "appointmentDate": "2026-05-07"
+  },
+  {
+    "id": "appt-1777179842050-dgmqnq",
+    "doctorId": "doc-2",
+    "day": "Viernes",
+    "slot": "08:00",
+    "patient": {
+      "uid": "demo-user",
+      "email": "paciente.demo@meditrujillo.pe",
+      "name": "Paciente Demo"
+    },
+    "status": "released",
+    "createdAt": "2026-04-26T05:04:02.050Z",
+    "appointmentDate": "2026-05-02"
+  }
+]
