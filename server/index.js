@@ -1057,8 +1057,12 @@ app.post('/api/admin/doctors/:id/toggle-status', requireAdmin, async (req, res) 
 })
 
 // ─── Arranque ─────────────────────────────────────────────────────────────
+// ─── Arranque ─────────────────────────────────────────────────────────────
 
-bootstrap().then(() => {
+// bootstrap().then(() => {
+// Para evitar que los doctores se recreen solos, desactivamos el sembrado automático.
+// Si necesitas volver a sembrar la base de datos, descomenta la línea de abajo y reinicia.
+Promise.resolve().then(() => {
   app.listen(port, '0.0.0.0', () => {
     const publicUrl = process.env.RENDER_EXTERNAL_URL || `http://localhost:${port}`
     console.log(`MediTrujillo server en ${publicUrl}`)
