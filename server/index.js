@@ -498,9 +498,20 @@ app.get('/api/health', (_req, res) => {
   res.json({ ok: true })
 })
 
-app.get('/', (_req, res) => {
-  res.redirect('/admin')
-})
+const distDir = path.join(__dirname, '../dist')
+if (fs.existsSync(distDir)) {
+  app.use(express.static(distDir))
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/admin') || req.path.startsWith('/uploads')) {
+      return next()
+    }
+    res.sendFile(path.join(distDir, 'index.html'))
+  })
+} else {
+  app.get('/', (_req, res) => {
+    res.redirect('/admin')
+  })
+}
 
 app.get('/api/doctors', async (req, res) => {
   try {
