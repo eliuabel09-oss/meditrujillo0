@@ -4,8 +4,16 @@ import { useAppContext } from '../context/AppContext'
 import { getDoctorById } from '../services/publicApi'
 import { useSEO } from '../hooks/useSEO'
 
-const apiUrl = import.meta.env.VITE_API_URL || 'https://meditrujillo0.onrender.com'
-const resolveAssetUrl = (value) => (value && value.startsWith('/uploads/')) ? `${apiUrl}${value}` : value
+const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'https://meditrujillo0.onrender.com')
+
+const resolveAssetUrl = (value, name) => {
+  if (!value || value === '/images/doctor-placeholder.svg') {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Doctor')}&background=0F172A&color=fff&bold=true`;
+  }
+  if (value.startsWith('http') || value.startsWith('data:image')) return value;
+  if (value.startsWith('/uploads/')) return `${apiUrl}${value}`;
+  return value;
+}
 
 export function DoctorProfile() {
   const { id } = useParams()
@@ -67,10 +75,10 @@ export function DoctorProfile() {
   const waLink = `https://wa.me/${targetNumber}?text=${encodeURIComponent(waMessage)}`
 
   const weekDays = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']
-  const imageUrl = resolveAssetUrl(doctor.image || doctor.photoUrl)
-  const titleImages = normalizeCredentialImages(doctor.titleImages || doctor.titleImagesUrls, resolveAssetUrl)
-  const mastersImages = normalizeCredentialImages(doctor.mastersImages || doctor.mastersImage || doctor.mastersImageUrl || doctor.mastersImagesUrls, resolveAssetUrl)
-  const certificationsImages = normalizeCredentialImages(doctor.certificationsImages || doctor.certificationsImage || doctor.certificationsImageUrl || doctor.certificationsImagesUrls, resolveAssetUrl)
+  const imageUrl = resolveAssetUrl(doctor.image || doctor.photoPath || doctor.photoUrl, doctor.name)
+  const titleImages = normalizeCredentialImages(doctor.titleImages || doctor.titleImagesUrls || doctor.titleImagePath, (val) => resolveAssetUrl(val, 'Titulo'))
+  const mastersImages = normalizeCredentialImages(doctor.mastersImages || doctor.mastersImage || doctor.mastersImageUrl || doctor.mastersImagesUrls || doctor.mastersImagePath, (val) => resolveAssetUrl(val, 'Maestria'))
+  const certificationsImages = normalizeCredentialImages(doctor.certificationsImages || doctor.certificationsImage || doctor.certificationsImageUrl || doctor.certificationsImagesUrls || doctor.certificationsImagePath, (val) => resolveAssetUrl(val, 'Certificado'))
 
   return (
     <main className="bg-slate-50/50 dark:bg-slate-950/50 pb-24">
@@ -91,16 +99,16 @@ export function DoctorProfile() {
           <div className="flex flex-col lg:flex-row gap-10">
             
             {/* Identity Split */}
-            <div className="flex flex-col md:flex-row gap-8 flex-1">
-              <div className="relative shrink-0">
+            <div className="flex flex-col md:flex-row gap-8 flex-1 items-center md:items-start text-center md:text-left">
+              <div className="relative shrink-0 w-40 h-40">
                 <img 
                   src={imageUrl} 
                   alt={doctor.name} 
-                  className="h-40 w-40 rounded-[32px] object-cover object-top shadow-2xl ring-8 ring-white dark:ring-slate-800"
+                  className="h-full w-full rounded-[32px] object-cover object-top shadow-2xl ring-8 ring-white dark:ring-slate-800"
                   onError={(e) => { e.currentTarget.src = '/images/profile_picture.webp' }}
                 />
                 {doctor.availableNow && (
-                  <div className="absolute -bottom-2 -right-2 flex items-center gap-2 rounded-2xl bg-emerald-500 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white shadow-lg ring-4 ring-white dark:ring-slate-900">
+                  <div className="absolute -bottom-2 -right-2 flex items-center gap-2 rounded-2xl bg-emerald-500 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-white shadow-lg ring-4 ring-white dark:ring-slate-900 z-10">
                     <span className="badge-pulse">
                       <span className="badge-pulse-ring bg-white"></span>
                       <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
@@ -112,7 +120,7 @@ export function DoctorProfile() {
               
               <div className="flex-1">
                 <div className="flex flex-col gap-3">
-                  <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl dark:text-white">{doctor.name}</h1>
+                  <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl dark:text-white leading-tight">{doctor.name}</h1>
                   <div className="flex gap-2">
                     <span className="flex items-center gap-1.5 rounded-xl bg-emerald-50 px-3 py-1.5 text-[11px] font-black uppercase tracking-widest text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400">
                       Verificado
@@ -151,8 +159,8 @@ export function DoctorProfile() {
             </div>
 
             {/* Price & Action Split */}
-            <div className="w-full lg:w-[320px] shrink-0 border-t border-slate-100 pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0 dark:border-white/5">
-              <div className="mb-6 rounded-3xl bg-slate-100 p-6 dark:bg-white/5">
+            <div className="w-full lg:w-[340px] shrink-0 border-t border-slate-100 pt-8 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0 dark:border-white/5 flex flex-col justify-center">
+              <div className="mb-6 rounded-3xl bg-slate-100 p-6 dark:bg-white/5 border border-transparent dark:border-white/5 shadow-sm">
                 <div className="text-[12px] font-black uppercase tracking-widest text-slate-500 dark:text-slate-400">Costo de consulta</div>
                 <div className="mt-2 flex items-baseline gap-2">
                   <span className="text-4xl font-black text-slate-950 dark:text-white">S/ {doctor.price}</span>
@@ -161,10 +169,10 @@ export function DoctorProfile() {
               </div>
               
               <div className="flex flex-col gap-3">
-                <button onClick={() => setSelectedDoctor(doctor)} className="primary-pill h-[60px] w-full text-[16px]">
+                <button onClick={() => setSelectedDoctor(doctor)} className="primary-pill h-[60px] w-full text-[16px] shadow-xl shadow-brand-500/20">
                   Reservar Cita Ahora
                 </button>
-                <a href={waLink} target="_blank" rel="noopener noreferrer" className="secondary-pill h-[60px] w-full text-[16px]">
+                <a href={waLink} target="_blank" rel="noopener noreferrer" className="secondary-pill h-[60px] w-full text-[16px] border border-slate-200 dark:border-white/10">
                   Enviar Mensaje Directo
                 </a>
               </div>
@@ -219,17 +227,41 @@ export function DoctorProfile() {
                 <section className="rounded-[40px] bg-white p-10 shadow-xl shadow-brand-900/5 dark:bg-slate-900 border border-slate-100 dark:border-white/5">
                   <SectionTitle icon={<svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.673.337a4 4 0 01-2.58.345l-2.333-.467a2 2 0 00-1.022.547l-2.387-.477a6 6 0 00-3.86.517l-.673.337a4 4 0 01-2.58.345l-2.333-.467a2 2 0 00-1.022.547"/></svg>} title="Nuestros Servicios" />
                   <div className="mt-8 grid gap-6 md:grid-cols-2">
-                    <div className="group rounded-[32px] border-2 border-slate-50 bg-slate-50/50 p-8 transition-all hover:border-brand-200 hover:bg-white dark:border-white/5 dark:bg-white/5 dark:hover:bg-slate-800">
+                    
+                    {/* Default Consultation Card */}
+                    <div className="group flex flex-col rounded-[32px] border-2 border-slate-50 bg-slate-50/50 p-8 transition-all hover:border-brand-200 hover:bg-white dark:border-white/5 dark:bg-white/5 dark:hover:bg-slate-800">
                       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-brand-600 shadow-sm dark:bg-slate-800">
                         <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
                       </div>
                       <h4 className="mt-6 text-xl font-bold text-slate-900 dark:text-white">Consulta Médica</h4>
-                      <p className="mt-3 text-[15px] leading-relaxed text-slate-500">Evaluación clínica detallada, diagnóstico y plan de tratamiento personalizado.</p>
-                      <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6 dark:border-white/5">
+                      <p className="mt-3 flex-1 text-[15px] leading-relaxed text-slate-500">Evaluación clínica detallada, diagnóstico y plan de tratamiento personalizado.</p>
+                      <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6 pb-6 dark:border-white/5">
                         <span className="text-[14px] font-bold text-slate-400">30 - 45 min</span>
                         <span className="text-2xl font-black text-brand-600">S/ {doctor.price}</span>
                       </div>
+                      <button 
+                        onClick={() => setSelectedDoctor({ ...doctor, _service: { name: 'Consulta Médica', price: doctor.price } })}
+                        className="w-full h-12 rounded-xl bg-brand-50 text-[14px] font-black text-brand-600 transition-all group-hover:bg-brand-600 group-hover:text-white dark:bg-brand-500/10 dark:text-brand-400"
+                      >
+                        Reservar Servicio
+                      </button>
                     </div>
+
+                    {/* Additional Services */}
+                    {(doctor.services || []).map((svc, i) => (
+                      <div key={i} className="group flex flex-col rounded-[32px] border-2 border-slate-50 bg-slate-50/50 p-8 transition-all hover:border-brand-200 hover:bg-white dark:border-white/5 dark:bg-white/5 dark:hover:bg-slate-800">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-brand-600 shadow-sm dark:bg-slate-800">
+                          <svg className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        </div>
+                        <h4 className="mt-6 text-xl font-bold text-slate-900 dark:text-white">{svc.name}</h4>
+                        <p className="mt-3 flex-1 text-[15px] leading-relaxed text-slate-500">Servicio especializado brindado por el profesional.</p>
+                        <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6 dark:border-white/5">
+                          <span className="text-2xl font-black text-brand-600">S/ {svc.price}</span>
+                          <span className="text-[11px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-3 py-1.5 rounded-lg dark:bg-white/5">Informativo</span>
+                        </div>
+                      </div>
+                    ))}
+
                   </div>
                 </section>
 
@@ -288,7 +320,7 @@ export function DoctorProfile() {
                     marginHeight="0" 
                     marginWidth="0" 
                     src={`https://maps.google.com/maps?q=${encodeURIComponent(doctor.clinic || '')} ${encodeURIComponent(doctor.district || '')} ${encodeURIComponent(doctor.province || '')} Trujillo&t=&z=15&ie=UTF8&iwloc=&output=embed`}
-                    className="grayscale contrast-125 dark:invert dark:opacity-80 transition-all duration-700 group-hover:grayscale-0 group-hover:contrast-100"
+                    className="transition-all duration-700 dark:invert-[0.9] dark:hue-rotate-[180deg] dark:brightness-[0.8] dark:contrast-[1.2] group-hover:opacity-100"
                   ></iframe>
                   <div className="absolute top-6 left-6 right-6">
                     <div className="glass-card flex items-center gap-4 !p-4 !bg-white/80 dark:!bg-slate-900/80">

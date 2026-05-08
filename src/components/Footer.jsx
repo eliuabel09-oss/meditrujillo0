@@ -20,7 +20,7 @@ export function Footer() {
         <iframe
           id="footer-map"
           title="Ubicación MediTrujillo"
-          className="w-full h-full border-0 hidden"
+          className="w-full h-full border-0 hidden transition-all duration-700 dark:invert-[0.9] dark:hue-rotate-[180deg] dark:brightness-[0.8] dark:contrast-[1.2]"
           allowFullScreen
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"

@@ -5,6 +5,7 @@ import { useAppContext } from '../context/AppContext'
 import { DoctorShowcase } from '../components/DoctorShowcase'
 import { SectionHeader } from '../components/SectionHeader'
 import { useSEO } from '../hooks/useSEO'
+import { AiOrientationTool } from '../components/AiOrientationTool'
 
 const clinicTiles = [
   {
@@ -34,13 +35,41 @@ const heroImages = [
 ]
 
 export function HomePage() {
-  const { featuredDoctors } = useAppContext()
+  const { featuredDoctors, doctors } = useAppContext()
   const [currentImageIdx, setCurrentImageIdx] = useState(0)
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
   const [searchDistrict, setSearchDistrict] = useState('')
 
   const [showFullCarousel, setShowFullCarousel] = useState(false)
+
+  const [aiSymptoms, setAiSymptoms] = useState('')
+  const [aiResult, setAiResult] = useState(null)
+  const [isAiLoading, setIsAiLoading] = useState(false)
+
+  const handleAiAnalyze = () => {
+    if (!aiSymptoms.trim()) return
+    setIsAiLoading(true)
+
+    // Simulate premium thinking time
+    setTimeout(() => {
+      const result = matchSymptoms(aiSymptoms, doctors)
+      setAiResult(result)
+      setIsAiLoading(false)
+    }, 1500)
+  }
+
+  const previewDoctor = doctors?.find(d => d.availableNow && d.status === 'active') || featuredDoctors?.[0] || {
+    name: 'Médico Especialista',
+    specialty: 'Atención Inmediata',
+    rating: 5.0,
+    reviews: 0
+  };
+
+  const previewImage = previewDoctor?.photoPath || previewDoctor?.image || previewDoctor?.photoUrl;
+  const imageUrl = previewImage && previewImage !== '/images/doctor-placeholder.svg'
+    ? previewImage
+    : `https://ui-avatars.com/api/?name=${encodeURIComponent(previewDoctor?.name || 'Doctor')}&background=0F172A&color=fff&bold=true`;
 
   useSEO({
     title: 'Tu médico ideal en Trujillo | MedicoTrujillo',
@@ -63,7 +92,7 @@ export function HomePage() {
   return (
     <main className="overflow-x-hidden">
       {/* Hero Section - Flexible Height for Responsiveness */}
-      <section className="relative min-h-[720px] sm:min-h-[800px] md:h-[840px] w-full overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors flex flex-col">
+      <section className="relative min-h-[750px] md:min-h-[780px] w-full overflow-hidden bg-slate-50 dark:bg-slate-950 transition-colors flex flex-col">
         {/* Animated Background Blobs - Deferred */}
         {showFullCarousel && (
           <>
@@ -73,7 +102,7 @@ export function HomePage() {
         )}
 
         {(showFullCarousel ? heroImages : [heroImages[0]]).map((src, idx) => (
-          <img 
+          <img
             key={src}
             src={`${src.split('?')[0]}?w=500&q=50`}
             alt="Fondo Médico"
@@ -88,20 +117,20 @@ export function HomePage() {
 
         {/* Improved Overlay for better image visibility + text contrast */}
         <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/40 to-white dark:from-slate-950/90 dark:via-slate-950/60 dark:to-slate-950 pointer-events-none" />
-        
-        <div className="section-container relative z-10 flex h-full flex-col items-center justify-center text-center pt-32 sm:pt-40 pb-16">
+
+        <div className="section-container relative z-10 flex flex-col items-center justify-center text-center pt-16 sm:pt-20 pb-8">
           <div className="animate-slide-up w-full max-w-5xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-brand-500/10 backdrop-blur-md px-5 py-2.5 text-[11px] sm:text-[13px] font-black uppercase tracking-[0.25em] text-brand-700 dark:text-brand-300 mb-8 sm:mb-10 border border-brand-500/20 shadow-sm">
+            <div className="inline-flex items-center gap-2 rounded-full bg-brand-500/10 backdrop-blur-md px-5 py-2.5 text-[11px] sm:text-[13px] font-black uppercase tracking-[0.25em] text-brand-700 dark:text-brand-300 mb-6 sm:mb-8 border border-brand-500/20 shadow-sm">
               <span className="h-2 w-2 rounded-full bg-brand-600 animate-pulse"></span>
               Plataforma Médica Trujillo
             </div>
 
-            <h1 className="text-[40px] sm:text-7xl md:text-8xl font-black leading-[1.05] text-slate-950 dark:text-white tracking-tighter drop-shadow-sm">
+            <h1 className="text-[36px] sm:text-6xl md:text-[76px] font-black leading-[1.05] text-slate-950 dark:text-white tracking-tighter drop-shadow-sm">
               Tu salud merece a <br className="hidden sm:block" />
               <span className="text-brand-600 dark:text-brand-500 bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-blue-500 dark:from-brand-400 dark:to-blue-400">los mejores</span>
             </h1>
 
-            <p className="mt-8 sm:mt-10 mx-auto text-base sm:text-xl md:text-2xl font-medium leading-relaxed text-slate-700 dark:text-slate-300 max-w-3xl drop-shadow-sm px-4">
+            <p className="mt-6 sm:mt-8 mx-auto text-base sm:text-lg md:text-xl font-medium leading-relaxed text-slate-700 dark:text-slate-300 max-w-3xl drop-shadow-sm px-4">
               Encuentra especialistas verificados en Trujillo. Reserva tu cita en segundos, <span className="text-slate-900 dark:text-white font-bold">sin complicaciones</span> y desde cualquier dispositivo.
             </p>
 
@@ -110,15 +139,15 @@ export function HomePage() {
               let finalQuery = searchQuery;
               if (searchDistrict) finalQuery += ` ${searchDistrict}`;
               navigate(`/buscar-doctor?q=${encodeURIComponent(finalQuery.trim())}`);
-            }} className="hero-search-bar mt-10 md:mt-14 mx-auto glass-card flex flex-col sm:flex-row items-center p-2 gap-2 sm:gap-0 max-w-3xl">
+            }} className="hero-search-bar mt-8 md:mt-10 mx-auto glass-card flex flex-col sm:flex-row items-center p-2 gap-2 sm:gap-0 max-w-3xl">
               <div className="flex items-center flex-1 px-4 gap-3 w-full">
-                <label htmlFor="hero-search-input" className="sr-only">¿Qué especialidad buscas?</label>
+                <label htmlFor="hero-search-input" className="sr-only">Nombre, especialidad o clínica</label>
                 <svg className="h-6 w-6 text-brand-600 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
                 <input
                   id="hero-search-input"
                   type="text"
-                  placeholder="¿Qué especialidad buscas?"
-                  className="bg-transparent w-full py-4 text-[16px] sm:text-[18px] font-bold text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
+                  placeholder="Nombre, especialidad o clínica..."
+                  className="bg-transparent w-full py-4 text-[15px] sm:text-[17px] font-bold text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -139,12 +168,12 @@ export function HomePage() {
                   <option value="Huanchaco">Huanchaco</option>
                 </select>
               </div>
-              <button type="submit" className="primary-pill w-full sm:w-auto px-10 py-5 shadow-2xl shadow-brand-500/30 hover:scale-[1.02] active:scale-95 transition-all text-[16px]">
+              <button type="submit" className="primary-pill w-full sm:w-auto px-10 py-5 shadow-2xl shadow-brand-500/30 hover:scale-[1.02] active:scale-95 transition-all text-[15px]">
                 Buscar
               </button>
             </form>
 
-            <div className="mt-16 md:mt-20 flex justify-center flex-wrap gap-10 sm:gap-20 pb-12">
+            <div className="mt-10 md:mt-12 flex justify-center flex-wrap gap-10 sm:gap-20">
               <Metric value="+12k" label="Pacientes" />
               <Metric value="+1200" label="Médicos" />
               <Metric value="98%" label="Satisfacción" />
@@ -172,36 +201,98 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* AI Orientation - Theme Aware */}
-      <section className="bg-slate-50 dark:bg-slate-900/20 py-24 md:py-32 transition-colors">
-        <div className="section-container grid items-center gap-16 lg:grid-cols-2">
-          <div className="relative aspect-video overflow-hidden rounded-[48px] shadow-2xl group">
-            <img
-              src="https://images.unsplash.com/photo-1551076805-e1869033e561?w=500&q=70"
-              alt="Inteligencia Artificial en Salud"
-              width="500"
-              height="281"
-              decoding="async"
-              className="w-full h-full border-0 opacity-80 transition-all duration-700 group-hover:opacity-100"
-              loading="lazy"
-            />
-          </div>
+      {/* Immediate Attention - Premium Feature */}
+      <section className="py-24 bg-brand-50 dark:bg-slate-900/40 relative overflow-hidden transition-colors border-y border-brand-100 dark:border-white/5">
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-[600px] h-[600px] bg-brand-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-[400px] h-[400px] bg-blue-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+        <div className="section-container relative z-10 grid items-center gap-16 lg:grid-cols-2">
           <div>
-            <div className="section-eyebrow text-brand-700 dark:text-brand-300 font-bold">Ayuda Digital</div>
-            <h2 className="mt-6 text-4xl font-black leading-tight text-slate-900 dark:text-white md:text-6xl">
-              ¿No sabes qué <br /> especialista necesitas?
-            </h2>
-            <p className="mt-8 text-lg leading-relaxed text-slate-500 dark:text-slate-400">
-              Nuestra inteligencia artificial analiza tus síntomas en segundos y te recomienda la especialidad médica más adecuada para tu caso.
-            </p>
-            <div className="mt-12 space-y-8">
-              <Bullet title="Análisis de lenguaje natural" text="Describa su sintomatología con sus propias palabras para una evaluación preliminar." light />
-              <Bullet title="Resultados en tiempo real" text="Identifique la especialidad médica pertinente de manera instantánea." light />
-              <Bullet title="Conexión inmediata" text="Acceda a perfiles de especialistas con disponibilidad para atención inmediata." light />
+            <div className="inline-flex items-center gap-2 rounded-full bg-emerald-100 dark:bg-emerald-500/10 px-4 py-2 text-[11px] font-black uppercase tracking-widest text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20 mb-6">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500 opacity-75"></span>
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
+              </span>
+              En Línea Ahora
             </div>
-            <Link to="/orientacion-ia" className="primary-pill mt-12 px-12 py-5 text-[17px]">
-              Iniciar consulta gratuita
+            <h2 className="text-4xl font-black leading-tight md:text-6xl text-slate-950 dark:text-white">
+              ¿Necesitas un médico <br /><span className="text-brand-600 dark:text-brand-400">ahora mismo</span>?
+            </h2>
+            <p className="mt-8 text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+              Accede a consultas médicas sin esperas. Revisa el perfil completo, especialidad y reseñas del doctor antes de ingresar, para que sepas exactamente con quién te atiendes, incluso en una urgencia.
+            </p>
+            <div className="mt-10 space-y-6">
+              <div className="flex gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400">
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">Transparencia Total</div>
+                  <div className="text-slate-500 dark:text-slate-400 mt-1">Conoce la trayectoria del especialista antes de tu consulta.</div>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-600 dark:text-brand-400">
+                  <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                </div>
+                <div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">Sin Tiempos de Espera</div>
+                  <div className="text-slate-500 dark:text-slate-400 mt-1">Conecta con médicos que están en línea listos para atenderte.</div>
+                </div>
+              </div>
+            </div>
+            <Link to="/buscar-doctor?available=true" className="primary-pill mt-12 px-10 py-5 text-[17px]">
+              Ver médicos disponibles
             </Link>
+          </div>
+          <div className="relative hidden lg:block">
+            <div className="relative overflow-hidden rounded-[40px] aspect-square shadow-2xl border border-brand-100 dark:border-white/5">
+              <img src="https://images.unsplash.com/photo-1579684385127-1ef15d508118?w=800&q=80" alt="Médico atendiendo ahora" className="h-full w-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-900/20 to-transparent"></div>
+              <div className="absolute bottom-8 left-8 right-8">
+                <div className="rounded-3xl bg-white/10 backdrop-blur-md border border-white/20 p-6 shadow-2xl">
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-16 w-16 rounded-full overflow-hidden border-2 border-emerald-400 shadow-lg">
+                      <img src={imageUrl} alt={previewDoctor.name} className="h-full w-full object-cover" />
+                      <div className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-800"></div>
+                    </div>
+                    <div>
+                      <div className="text-xl font-bold text-white line-clamp-1">{previewDoctor.name}</div>
+                      <div className="text-brand-200 font-bold text-sm line-clamp-1">{previewDoctor.specialty} · En línea</div>
+                      <div className="flex items-center gap-1 mt-1">
+                        <svg className="h-3 w-3 text-amber-400" fill="currentColor" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                        <span className="text-xs font-bold text-white">{Number(previewDoctor.rating || 5).toFixed(1)} ({previewDoctor.reviews || 0} reseñas)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Interactive AI Orientation Section */}
+      <section id="orientacion" className="bg-white dark:bg-slate-900 py-24 md:py-32 relative overflow-hidden transition-colors duration-500">
+        {/* Decorative background elements */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-brand-500/5 dark:bg-brand-500/10 blur-[120px] rounded-full pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-blue-500/5 dark:bg-blue-500/10 blur-[100px] rounded-full pointer-events-none"></div>
+
+        <div className="section-container relative z-10 max-w-5xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-6 py-2.5 text-[10px] font-black uppercase tracking-[0.2em] text-brand-600 dark:text-brand-400 mb-10 shadow-sm">
+            Guía de salud gratuita
+          </div>
+
+          <h2 className="text-4xl font-black leading-[1.1] text-slate-950 dark:text-white md:text-7xl tracking-tighter">
+            ¿A qué especialista <br />
+            <span className="text-brand-600 dark:text-brand-500 bg-clip-text text-transparent bg-gradient-to-r from-brand-600 to-blue-500 dark:from-brand-400 dark:to-blue-400">deberías acudir?</span>
+          </h2>
+
+          <p className="mt-8 text-lg md:text-xl font-medium leading-relaxed text-slate-500 dark:text-slate-400 max-w-2xl mx-auto">
+            Cuéntanos qué molestias tienes y nuestro sistema te recomendará la especialidad médica más adecuada para tu caso.
+          </p>
+
+          <div className="mt-12 md:mt-16">
+            <AiOrientationTool />
           </div>
         </div>
       </section>
@@ -271,10 +362,10 @@ export function HomePage() {
 function Metric({ value, label }) {
   return (
     <div className="group text-center sm:text-left">
-      <div className="text-5xl font-black leading-none text-slate-950 dark:text-white transition-all group-hover:scale-110 md:text-6xl tracking-tighter">
+      <div className="text-4xl font-black leading-none text-slate-950 dark:text-white transition-all group-hover:scale-110 md:text-5xl tracking-tighter">
         {value}
       </div>
-      <div className="mt-4 text-[13px] font-black uppercase tracking-[0.25em] text-brand-600 dark:text-brand-400">
+      <div className="mt-4 text-[11px] font-black uppercase tracking-[0.25em] text-brand-600 dark:text-brand-400">
         {label}
       </div>
     </div>

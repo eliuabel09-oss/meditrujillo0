@@ -78,11 +78,12 @@ export async function createDoctorApplication(payload) {
 
     // Append all text fields except file/schedule fields
     Object.keys(payload).forEach(key => {
-      if (!['photo', 'titleImages', 'mastersImages', 'certificationsImages', 'schedules'].includes(key)) {
+      if (!['photo', 'titleImages', 'mastersImages', 'certificationsImages', 'schedules', 'services'].includes(key)) {
         formData.append(key, payload[key] || '')
       }
     })
     formData.append('schedules', JSON.stringify(payload.schedules || {}))
+    formData.append('services', JSON.stringify(payload.services || []))
 
     // Append photo and credential image arrays
     if (payload.photo) formData.append('photo', payload.photo)
@@ -128,16 +129,46 @@ export async function reserveAppointment(payload) {
 // Only returns pro/premium doctors (basic plan excluded from AI results).
 export function matchSymptoms(symptoms, doctors) {
   const normalized = symptoms.toLowerCase()
-  const specialties = [...new Set(Object.entries(keywordMap).flatMap(([word, mapped]) => (normalized.includes(word) ? mapped : [])))]
-  const matches = specialties.length ? specialties : ['Medicina General']
+  
+  // Calculate scores for each specialty based on keyword hits
+  const scores = {}
+  
+  Object.entries(keywordMap).forEach(([word, mappedSpecialties]) => {
+    if (normalized.includes(word.toLowerCase())) {
+      mappedSpecialties.forEach(spec => {
+        scores[spec] = (scores[spec] || 0) + 1
+      })
+    }
+  })
+
+  // Sort specialties by score (descending)
+  const sortedSpecialties = Object.entries(scores)
+    .sort((a, b) => b[1] - a[1])
+    .map(([spec]) => spec)
+
+  // Default to General Medicine if no matches
+  const matches = sortedSpecialties.length ? sortedSpecialties : ['Medicina General']
+  
   const prioritized = doctors
     .filter((doctor) => matches.includes(doctor.specialty) && doctor.status === 'active' && doctor.plan !== 'basic')
-    .sort((a, b) => rankPlan(b.plan) - rankPlan(a.plan) || (b.rating || 5) - (a.rating || 5))
+    .sort((a, b) => {
+      // First: Sort by match score (how well the doctor's specialty matches the symptoms)
+      const scoreA = matches.indexOf(a.specialty)
+      const scoreB = matches.indexOf(b.specialty)
+      if (scoreA !== scoreB) return scoreA - scoreB
+
+      // Second: Sort by plan priority
+      const planA = rankPlan(a.plan)
+      const planB = rankPlan(b.plan)
+      if (planA !== planB) return planB - planA
+
+      // Third: Sort by rating
+      return (b.rating || 5) - (a.rating || 5)
+    })
 
   const premium = prioritized.filter((doctor) => doctor.plan === 'premium')
   const pro = prioritized.filter((doctor) => doctor.plan === 'pro')
 
-  // Prefer premium results; fall back to pro if no premium matches
   return {
     specialties: matches,
     doctors: premium.length ? premium : pro

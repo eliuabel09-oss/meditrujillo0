@@ -23,7 +23,7 @@ export function ReservationModal({ doctor, onClose, onReserve, error }) {
     edad: '',
     telefono: '',
     correo: session?.email || '',
-    motivo: ''
+    motivo: doctor?._service?.name || ''
   })
   const [currentDate, setCurrentDate] = useState(() => {
     const today = new Date()
@@ -192,7 +192,10 @@ export function ReservationModal({ doctor, onClose, onReserve, error }) {
              </div>
              <div>
                 <h2 className="text-2xl font-black text-slate-950 dark:text-white">Reservar Cita</h2>
-                <div className="mt-1 text-[15px] font-bold text-brand-600 dark:text-brand-400">{localDoctor.name}</div>
+                <div className="mt-1 text-[15px] font-bold text-brand-600 dark:text-brand-400">
+                   {localDoctor.name}
+                   {doctor?._service && <span className="ml-2 text-slate-500 font-normal">· {doctor._service.name} (S/ {doctor._service.price})</span>}
+                </div>
              </div>
           </div>
 

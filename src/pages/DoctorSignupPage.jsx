@@ -30,7 +30,8 @@ const emptyForm = {
   schedules: days.reduce((acc, day) => {
     acc[day] = []
     return acc
-  }, {})
+  }, {}),
+  services: []
 }
 
 const planData = [
@@ -197,6 +198,29 @@ function AnimatedStat({ value, label, prefix = '', suffix = '', started }) {
 }
 
 export function DoctorSignupPage() {
+  const [dynamicPlans, setDynamicPlans] = useState(planData)
+  
+  useEffect(() => {
+    fetch('/api/settings/plans')
+      .then(res => res.json())
+      .then(data => {
+        setDynamicPlans(current => current.map(p => {
+          const priceBasic = data.priceBasic ?? 0
+          const pricePro = data.pricePro ?? 50
+          const pricePremium = data.pricePremium ?? 100
+          const limitBasic = data.basic ?? 15
+          const limitPro = data.pro ?? 25
+          const limitPremium = data.premium ?? 999
+
+          if (p.id === 'basic') return { ...p, price: priceBasic > 0 ? `S/ ${priceBasic}` : 'Gratis', features: p.features.map(f => f.includes('citas') ? `Hasta ${limitBasic} citas diarias` : f) }
+          if (p.id === 'pro') return { ...p, price: `S/ ${pricePro}`, features: p.features.map(f => f.includes('citas') ? `Hasta ${limitPro} citas diarias` : f) }
+          if (p.id === 'premium') return { ...p, price: `S/ ${pricePremium}`, features: p.features.map(f => f.includes('citas') ? `Ilimitado (${limitPremium}+) citas diarias` : f) }
+          return p
+        }))
+      })
+      .catch(err => console.error('Error fetching plans:', err))
+  }, [])
+
   const { submitDoctorApplication } = useAppContext()
   const [step, setStep] = useState(1)
   const [form, setForm] = useState(emptyForm)
@@ -304,10 +328,6 @@ export function DoctorSignupPage() {
           : `${code} registrado correctamente. Nuestro equipo revisará tu solicitud.`
       )
       setMessageMeta(notification ? { delivered: notification.delivered, mode: notification.mode, code } : { code, delivered: false })
-
-      if (notification && !notification.delivered && notification.waLink) {
-        window.location.href = notification.waLink
-      }
 
       setForm(emptyForm)
       setPreview('/images/profile_picture.webp')
@@ -501,9 +521,6 @@ export function DoctorSignupPage() {
                     <div className="text-xl font-black">¡Solicitud Enviada!</div>
                   </div>
                   <p className="mt-4 font-bold opacity-80">{message}</p>
-                  {messageMeta?.waLink && (
-                    <button onClick={() => window.open(messageMeta.waLink)} className="mt-6 primary-pill bg-emerald-600 hover:bg-emerald-700">Notificar por WhatsApp</button>
-                  )}
                 </div>
               )}
 
@@ -511,7 +528,7 @@ export function DoctorSignupPage() {
                 <div className="animate-fade-in">
                   <h3 className="text-2xl font-black text-slate-950 dark:text-white">Selecciona tu nivel de visibilidad</h3>
                   <div className="mt-10 grid gap-6 md:grid-cols-3">
-                    {planData.map((plan) => (
+                    {dynamicPlans.map((plan) => (
                       <button
                         key={plan.id}
                         onClick={() => setField('plan', plan.id)}
@@ -568,6 +585,30 @@ export function DoctorSignupPage() {
                       <InputField label="Costo Consulta (S/) *" type="number" value={form.price} onChange={(v) => setField('price', v)} placeholder="Ej. 150" />
                       <InputField label="Universidad Egresada *" value={form.university} onChange={(v) => setField('university', v)} placeholder="Ej. Universidad Nacional de Trujillo" />
                       <InputField label="Colegio (Secundaria) *" value={form.highSchool} onChange={(v) => setField('highSchool', v)} placeholder="Ej. San Juan" />
+                    </div>
+                    
+                    <div className="mt-8 pt-8 border-t border-slate-100 dark:border-white/5 md:col-span-2">
+                      <h4 className="text-lg font-black text-slate-900 dark:text-white mb-2">Servicios Adicionales (Opcional)</h4>
+                      <p className="text-[13px] text-slate-500 mb-6 font-medium">Si ofreces ecografías, procedimientos u otros servicios además de tu consulta, agrégalos aquí.</p>
+                      <div className="space-y-4">
+                        {(form.services || []).map((svc, i) => (
+                          <div key={i} className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-200 dark:bg-slate-800 dark:border-slate-700 shadow-sm">
+                             <div className="flex-1">
+                               <input className="w-full bg-transparent px-2 text-[14px] font-bold outline-none dark:text-white placeholder:text-slate-400" placeholder="Nombre (Ej. Ecografía Pélvica)" value={svc.name} onChange={(e) => { const newSvc = [...form.services]; newSvc[i].name = e.target.value; setField('services', newSvc) }} />
+                             </div>
+                             <div className="w-28 shrink-0 flex items-center gap-2 border-l border-slate-200 dark:border-slate-700 pl-3">
+                               <span className="text-[12px] font-black text-slate-400">S/</span>
+                               <input className="w-full bg-transparent text-[14px] font-black outline-none dark:text-white placeholder:text-slate-400" type="number" placeholder="Precio" value={svc.price} onChange={(e) => { const newSvc = [...form.services]; newSvc[i].price = e.target.value; setField('services', newSvc) }} />
+                             </div>
+                             <button onClick={() => { const newSvc = [...form.services]; newSvc.splice(i, 1); setField('services', newSvc) }} className="w-10 h-10 shrink-0 flex items-center justify-center rounded-xl bg-red-50 text-red-500 transition-all hover:bg-red-100 active:scale-95 dark:bg-red-500/10 dark:hover:bg-red-500/20" title="Eliminar servicio">
+                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="3"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                             </button>
+                          </div>
+                        ))}
+                        <button onClick={() => setField('services', [...(form.services || []), { name: '', price: '' }])} className="inline-flex h-12 items-center gap-2 rounded-2xl border-2 border-dashed border-brand-200 bg-brand-50/50 px-6 text-[13px] font-black text-brand-600 transition-all hover:border-brand-500 hover:bg-brand-50 active:scale-95 dark:border-brand-500/30 dark:bg-brand-500/5 dark:hover:border-brand-500 dark:hover:bg-brand-500/10">
+                          <span className="text-lg leading-none">+</span> Agregar Servicio
+                        </button>
+                      </div>
                     </div>
                     <div className="grid gap-6 md:grid-cols-3 mt-6 border-t border-slate-100 dark:border-white/5 pt-6 md:col-span-2">
                       <FileField label="Imágenes del título" onChange={(files) => setField('titleImages', files)} multiple />

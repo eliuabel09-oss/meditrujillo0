@@ -2,17 +2,14 @@ import { useState, useEffect } from 'react'
 import { useAppContext } from '../context/AppContext'
 import { useNavigate } from 'react-router-dom'
 
-const apiUrl = import.meta.env.VITE_API_URL || 'https://meditrujillo0.onrender.com'
+const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'https://meditrujillo0.onrender.com')
 
-// Resolves image path: prepends backend URL for /uploads/ paths
 const resolveAssetUrl = (value, name) => {
   if (!value || value === '/images/doctor-placeholder.svg') {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Doctor')}&background=0F172A&color=fff&bold=true`;
   }
-  // If it's a Firebase URL, external link, or Base64 data, return as is
   if (value.startsWith('http') || value.startsWith('data:image')) return value;
-  // If it's a local upload, let Vite proxy handle it
-  if (value.startsWith('/uploads/')) return value;
+  if (value.startsWith('/uploads/')) return `${apiUrl}${value}`;
   return value;
 }
 

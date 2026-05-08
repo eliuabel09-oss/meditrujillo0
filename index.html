@@ -17,9 +17,10 @@
     <link rel="icon" type="image/webp" href="/images/logoclinica.webp" />
 
     <script>
-      // Parallel API fetch - Minimal impact on main thread
       (function() {
-        const API = 'https://meditrujillo0.onrender.com/api/doctors';
+        const isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        const BASE = isDev ? '' : 'https://meditrujillo0.onrender.com';
+        const API = BASE + '/api/doctors';
         const f = u => fetch(u).then(r => r.ok ? r.json() : null).catch(() => null);
         window.__FEATURED_DOCTORS_PROMISE__ = f(API + '/featured');
         window.__DOCTORS_PROMISE__ = f(API);

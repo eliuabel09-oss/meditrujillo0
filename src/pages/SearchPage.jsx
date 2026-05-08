@@ -22,16 +22,20 @@ export function SearchPage() {
   const { doctors } = useAppContext()
   const [searchParams] = useSearchParams()
   const initialQuery = searchParams.get('q') ?? ''
+  const initialAvailable = searchParams.get('available') === 'true'
   const [query, setQuery] = useState(initialQuery)
   const [filters, setFilters] = useState({
     specialty: '',
     department: '',
     priceRange: '',
-    availableNow: false
+    availableNow: initialAvailable
   })
 
   useEffect(() => {
     setQuery(searchParams.get('q') ?? '')
+    if (searchParams.get('available') === 'true') {
+      setFilters(prev => ({ ...prev, availableNow: true }))
+    }
   }, [searchParams])
 
   useSEO({
@@ -239,7 +243,7 @@ function SelectField({ label, value, onChange, options, emptyLabel }) {
 }
 
 const resolveAssetUrl = (value, name) => {
-  if (!value || value === '/images/doctor-placeholder.svg') {
+  if (!value || typeof value !== 'string' || value === '/images/doctor-placeholder.svg') {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Doctor')}&background=0F172A&color=fff&bold=true`;
   }
   // If it's a Firebase URL, external link, or Base64 data, return as is
@@ -303,18 +307,28 @@ function DoctorCard({ doctor }) {
            <span className="line-clamp-1">{doctor.clinic}</span>
          </div>
 
-         <div className="mt-auto pt-8">
-            <div className="flex items-center justify-between border-t border-slate-50 pt-6 dark:border-white/5">
-              <div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Consulta</div>
-                <div className="text-2xl font-black text-slate-900 dark:text-white">S/ {doctor.price}</div>
+         <div className="mt-auto pt-5">
+            <div className="flex flex-wrap items-center justify-between gap-y-4 gap-x-2 border-t border-slate-50 pt-5 dark:border-white/5">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Consulta</span>
+                <div className="text-[22px] font-black text-slate-900 dark:text-white whitespace-nowrap leading-none mt-1">
+                  S/ {doctor.price}
+                </div>
               </div>
-              <button 
-                onClick={() => setSelectedDoctor(doctor)}
-                className="h-[52px] rounded-2xl bg-brand-600 px-8 text-[14px] font-black text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-700 active:scale-95"
-              >
-                Reservar
-              </button>
+              <div className="flex flex-1 gap-2 min-w-[180px] sm:flex-none">
+                <button 
+                  onClick={() => navigate(`/doctor/${doctor.id}`)}
+                  className="h-[44px] flex-1 rounded-xl bg-slate-100 text-[13px] font-black text-slate-600 transition-all hover:bg-slate-200 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10 flex items-center justify-center"
+                >
+                  Perfil
+                </button>
+                <button 
+                  onClick={() => setSelectedDoctor(doctor)}
+                  className="h-[44px] flex-[1.5] rounded-xl bg-brand-600 text-[13px] font-black text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-700 active:scale-95 flex items-center justify-center"
+                >
+                  Reservar
+                </button>
+              </div>
             </div>
          </div>
        </div>

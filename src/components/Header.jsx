@@ -54,10 +54,10 @@ export function Header() {
               <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-950 shadow-sm"></div>
             </div>
             <div className="hidden sm:block">
-              <div className="text-[20px] font-black leading-none tracking-tight text-slate-950 dark:text-white">
+              <div className="text-[18px] font-black leading-none tracking-tight text-slate-950 dark:text-white">
                 <span className="text-brand-600">Medico</span>Trujillo
               </div>
-              <div className="mt-1 text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">Salud al Instante</div>
+              <div className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Salud al Instante</div>
             </div>
           </NavLink>
 
@@ -68,7 +68,7 @@ export function Header() {
                 key={link.to}
                 to={link.to}
                 className={({ isActive }) =>
-                  `px-4 py-2.5 text-[14px] font-black transition-all duration-300 rounded-2xl ${isActive ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300' : 'text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5'}`
+                  `px-4 py-2.5 text-[13px] font-black transition-all duration-300 rounded-2xl ${isActive ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/10 dark:text-brand-300' : 'text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-white/5'}`
                 }
               >
                 {link.label}
@@ -86,7 +86,7 @@ export function Header() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Buscar especialista..."
-                className="w-[200px] bg-transparent text-[14px] font-bold text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
+                className="w-[200px] bg-transparent text-[13px] font-bold text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
               />
               <svg className="h-5 w-5 text-slate-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </form>
@@ -108,14 +108,14 @@ export function Header() {
                 <div className="h-11 w-24 animate-pulse rounded-2xl bg-slate-100 dark:bg-white/10"></div>
               ) : session ? (
                 <button 
-                  className="flex h-11 items-center justify-center rounded-2xl bg-slate-950 px-6 text-[14px] font-black text-white transition-all hover:bg-slate-800 active:scale-95 dark:bg-white/10 dark:hover:bg-white/20 whitespace-nowrap" 
+                  className="flex h-11 items-center justify-center rounded-2xl bg-slate-950 px-6 text-[13px] font-black text-white transition-all hover:bg-slate-800 active:scale-95 dark:bg-white/10 dark:hover:bg-white/20 whitespace-nowrap" 
                   onClick={logout}
                 >
                   Salir
                 </button>
               ) : (
                 <button 
-                  className="flex h-11 items-center justify-center rounded-2xl bg-brand-600 px-6 text-[14px] font-black text-white shadow-xl shadow-brand-500/20 transition-all hover:bg-brand-700 active:scale-95 whitespace-nowrap" 
+                  className="flex h-11 items-center justify-center rounded-2xl bg-brand-600 px-6 text-[13px] font-black text-white shadow-xl shadow-brand-500/20 transition-all hover:bg-brand-700 active:scale-95 whitespace-nowrap" 
                   onClick={() => navigate('/login')}
                 >
                   Acceder

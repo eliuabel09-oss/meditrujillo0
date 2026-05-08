@@ -4,15 +4,14 @@ import { useAppContext } from '../context/AppContext'
 import { useSEO } from '../hooks/useSEO'
 import { DoctorShowcase } from '../components/DoctorShowcase'
 
-const apiUrl = import.meta.env.VITE_API_URL || 'https://meditrujillo0.onrender.com'
+const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.DEV ? '' : 'https://meditrujillo0.onrender.com')
+
 const resolveAssetUrl = (value, name) => {
   if (!value || value === '/images/doctor-placeholder.svg') {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Doctor')}&background=0F172A&color=fff&bold=true`;
   }
-  // If it's a Firebase URL, external link, or Base64 data, return as is
   if (value.startsWith('http') || value.startsWith('data:image')) return value;
-  // If it's a local upload, let Vite proxy handle it
-  if (value.startsWith('/uploads/')) return value;
+  if (value.startsWith('/uploads/')) return `${apiUrl}${value}`;
   return value;
 }
 
@@ -50,7 +49,7 @@ export function AttentionPage() {
               <span className="text-emerald-600 dark:text-emerald-500">puede esperar.</span>
             </h1>
             <p className="mt-8 text-lg font-bold text-slate-600 dark:text-slate-400 md:text-xl lg:max-w-xl">
-              Encuentra especialistas en Trujillo con disponibilidad inmediata. Sin colas ni esperas largas, atención directa hoy mismo.
+              Encuentra especialistas en Trujillo con disponibilidad inmediata. Sin colas ni esperas largas, atención directa hoy mismo con total transparencia sobre el profesional que te atenderá.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 dark:bg-white/5 px-6 py-4 border border-slate-200 dark:border-white/10 shadow-sm">
@@ -211,18 +210,28 @@ function DoctorCard({ doctor }) {
            <span className="line-clamp-1">{doctor.clinic}</span>
          </div>
 
-         <div className="mt-auto pt-8">
-            <div className="flex items-center justify-between border-t border-slate-50 pt-6 dark:border-white/5">
-              <div>
-                <div className="text-[10px] font-black uppercase tracking-widest text-slate-400">Consulta</div>
-                <div className="text-2xl font-black text-slate-900 dark:text-white">S/ {doctor.price}</div>
+         <div className="mt-auto pt-5">
+            <div className="flex flex-wrap items-center justify-between gap-y-4 gap-x-2 border-t border-slate-50 pt-5 dark:border-white/5">
+              <div className="flex flex-col">
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Consulta</span>
+                <div className="text-[22px] font-black text-slate-900 dark:text-white whitespace-nowrap leading-none mt-1">
+                  S/ {doctor.price}
+                </div>
               </div>
-              <button 
-                onClick={() => setSelectedDoctor(doctor)}
-                className="h-[52px] rounded-2xl bg-brand-600 px-8 text-[14px] font-black text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-700 active:scale-95"
-              >
-                Reservar
-              </button>
+              <div className="flex flex-1 gap-2 min-w-[180px] sm:flex-none">
+                <button 
+                  onClick={() => navigate(`/doctor/${doctor.id}`)}
+                  className="h-[44px] flex-1 rounded-xl bg-slate-100 text-[13px] font-black text-slate-600 transition-all hover:bg-slate-200 dark:bg-white/5 dark:text-slate-300 dark:hover:bg-white/10 flex items-center justify-center"
+                >
+                  Perfil
+                </button>
+                <button 
+                  onClick={() => setSelectedDoctor(doctor)}
+                  className="h-[44px] flex-[1.5] rounded-xl bg-brand-600 text-[13px] font-black text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-700 active:scale-95 flex items-center justify-center"
+                >
+                  Reservar
+                </button>
+              </div>
             </div>
          </div>
        </div>
