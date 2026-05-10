@@ -120,10 +120,7 @@ export function HomePage() {
 
         <div className="section-container relative z-10 flex flex-col items-center justify-center text-center pt-16 sm:pt-20 pb-8">
           <div className="animate-slide-up w-full max-w-5xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-brand-500/10 backdrop-blur-md px-5 py-2.5 text-[11px] sm:text-[13px] font-black uppercase tracking-[0.25em] text-brand-700 dark:text-brand-300 mb-6 sm:mb-8 border border-brand-500/20 shadow-sm">
-              <span className="h-2 w-2 rounded-full bg-brand-600 animate-pulse"></span>
-              Plataforma Médica Trujillo
-            </div>
+            
 
             <h1 className="text-[36px] sm:text-6xl md:text-[76px] font-black leading-[1.05] text-slate-950 dark:text-white tracking-tighter drop-shadow-sm">
               Tu salud merece a <br className="hidden sm:block" />
@@ -131,7 +128,7 @@ export function HomePage() {
             </h1>
 
             <p className="mt-6 sm:mt-8 mx-auto text-base sm:text-lg md:text-xl font-medium leading-relaxed text-slate-700 dark:text-slate-300 max-w-3xl drop-shadow-sm px-4">
-              Encuentra especialistas verificados en Trujillo. Reserva tu cita en segundos, <span className="text-slate-900 dark:text-white font-bold">sin complicaciones</span> y desde cualquier dispositivo.
+              Encuentra especialistas verificados en Perú. Reserva tu cita en segundos, <span className="text-slate-900 dark:text-white font-bold">sin complicaciones</span> y desde cualquier dispositivo.
             </p>
 
             <form onSubmit={(e) => {
@@ -146,7 +143,7 @@ export function HomePage() {
                 <input
                   id="hero-search-input"
                   type="text"
-                  placeholder="Nombre, especialidad o clínica..."
+                  placeholder="Especialidad"
                   className="bg-transparent w-full py-4 text-[15px] sm:text-[17px] font-bold text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -162,11 +159,34 @@ export function HomePage() {
                   onChange={(e) => setSearchDistrict(e.target.value)}
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\' stroke-width=\'2.5\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19.5 8.25l-7.5 7.5-7.5-7.5\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right center', backgroundSize: '1.2em' }}
                 >
-                  <option value="">Todo Trujillo</option>
-                  <option value="Trujillo">Centro</option>
-                  <option value="Victor Larco">Victor Larco</option>
-                  <option value="Huanchaco">Huanchaco</option>
+                  <option value="">Departamentos</option>
+                  <option value="Tumbes">Tumbes</option>
+                  <option value="Piura">Piura</option>
+                  <option value="Lambayeque">Lambayeque</option>
+                  <option value="La Libertad">La Libertad</option>
+                  <option value="Ancash">Ancash</option>
+                  <option value="Lima">Lima</option>
+                  <option value="Ica">Ica</option>
+                  <option value="Arequipa">Arequipa</option>
+                  <option value="Moquegua">Moquegua</option>
+                  <option value="Tacna">Tacna</option>
+                  <option value="Cajamarca">Cajamarca</option>
+                  <option value="Huánuco">Huánuco</option>
+                  <option value="Pasco">Pasco</option>
+                  <option value="Junín">Junín</option>
+                  <option value="Huancavelica">Huancavelica</option>
+                  <option value="Ayacucho">Ayacucho</option>
+                  <option value="Apurímac">Apurímac</option>
+                  <option value="Cusco">Cusco</option>
+                  <option value="Puno">Puno</option>
+                  <option value="Loreto">Loreto</option>
+                  <option value="Amazonas">Amazonas</option>
+                  <option value="San Martín">San Martín</option>
+                  <option value="Ucayali">Ucayali</option>
+                  <option value="Madre de Dios">Madre de Dios</option>
+
                 </select>
+
               </div>
               <button type="submit" className="primary-pill w-full sm:w-auto px-10 py-5 shadow-2xl shadow-brand-500/30 hover:scale-[1.02] active:scale-95 transition-all text-[15px]">
                 Buscar
@@ -174,9 +194,9 @@ export function HomePage() {
             </form>
 
             <div className="mt-10 md:mt-12 flex justify-center flex-wrap gap-10 sm:gap-20">
-              <Metric value="+12k" label="Pacientes" />
-              <Metric value="+1200" label="Médicos" />
-              <Metric value="98%" label="Satisfacción" />
+              <Metric value="+120" label="Pacientes" />
+              <Metric value="+25" label="Médicos" />
+              <Metric value="100%" label="Satisfacción" />
             </div>
           </div>
         </div>
@@ -330,8 +350,8 @@ export function HomePage() {
               />
             </div>
             <div className="grid grid-cols-2 gap-6">
-              <StatCard value="+12k" label="Pacientes" sub="Atendidos al mes" />
-              <StatCard value="98%" label="Tasa de Éxito" sub="En diagnósticos" />
+              <StatCard value="+120" label="Pacientes" sub="Atendidos al mes" />
+              <StatCard value="100%" label="Tasa de Éxito" sub="En diagnósticos" />
             </div>
           </div>
         </div>
@@ -340,7 +360,7 @@ export function HomePage() {
       {/* Clinics Carousel */}
       <section className="bg-slate-100 dark:bg-slate-900/50 py-24">
         <div className="section-container">
-          <SectionHeader eyebrow="Instituciones" title="Centros Médicos Aliados" />
+          <SectionHeader eyebrow="Instituciones" title="Centros Médicos" />
           <div className="snap-rail mt-10">
             {clinicTiles.map((tile) => (
               <div key={tile.name} className="group relative min-w-[340px] h-[460px] overflow-hidden rounded-[40px] snap-start">

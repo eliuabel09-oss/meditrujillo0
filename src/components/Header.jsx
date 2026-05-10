@@ -55,7 +55,7 @@ export function Header() {
             </div>
             <div className="hidden sm:block">
               <div className="text-[18px] font-black leading-none tracking-tight text-slate-950 dark:text-white">
-                <span className="text-brand-600">Medico</span>Trujillo
+                <span className="text-brand-600">Medi</span>Trujillo
               </div>
               <div className="mt-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Salud al Instante</div>
             </div>
@@ -138,13 +138,13 @@ export function Header() {
             <NavLink to="/" className="flex items-center gap-4" onClick={closeMenu}>
               <img 
                 src="/images/logoclinica.webp" 
-                alt="MediTrujillo" 
+                alt="MedicoTrujillo" 
                 width="73" 
                 height="40"
                 className="h-10 w-auto rounded-xl shadow-xl" 
               />
               <div className="text-2xl font-black text-slate-950 dark:text-white">
-                MedicoTrujillo
+                MediTrujillo
               </div>
             </NavLink>
             <button 

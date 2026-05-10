@@ -78,7 +78,7 @@ export function SearchPage() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-600 opacity-75"></span>
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-brand-600"></span>
               </span>
-              Directorio Médico Trujillo
+              Directorio Médi Trujillo
             </div>
             <h1 className="text-4xl font-black tracking-tight text-slate-950 dark:text-white sm:text-5xl md:text-6xl lg:text-7xl">
               Encuentra a tu <br />
@@ -160,7 +160,7 @@ export function SearchPage() {
               <h3 className="text-lg font-black text-brand-900 dark:text-white">¿No encuentras lo que buscas?</h3>
               <p className="mt-2 text-sm font-bold text-brand-700 dark:text-brand-200">Escríbenos por WhatsApp y te ayudaremos a encontrar al especialista adecuado para ti.</p>
               <a 
-                href="https://wa.me/51949021141?text=Hola,%20necesito%20ayuda%20para%20encontrar%20un%20especialista%20en%20MedicoTrujillo" 
+                href="https://wa.me/51962525857?text=Hola,%20necesito%20ayuda%20para%20encontrar%20un%20especialista%20en%20MedicoTrujillo" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="mt-6 flex w-full items-center justify-center rounded-2xl bg-brand-600 py-3 text-[14px] font-black text-white shadow-lg shadow-brand-500/20 transition-all hover:bg-brand-700 active:scale-95"

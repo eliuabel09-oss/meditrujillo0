@@ -364,7 +364,7 @@ export function DoctorSignupPage() {
               Lleva tu consulta al <br /><span className="text-brand-600">siguiente nivel.</span>
             </h1>
             <p className="mt-8 text-lg font-bold text-slate-500 dark:text-slate-400 md:text-xl lg:max-w-xl leading-relaxed">
-              Únete a la red médica más consultada de Trujillo. Haz que nuevos pacientes te encuentren, organiza tu agenda y gestiona tu consulta de forma sencilla.
+              Únete a la red médica más consultada del Perú. Haz que nuevos pacientes te encuentren, organiza tu agenda y gestiona tu consulta de forma sencilla.
             </p>
             <div className="mt-12 flex flex-wrap gap-5">
               <Link to="/eres-medico#registro" className="primary-pill h-16 px-12 text-[17px] flex items-center justify-center">Registrarme Ahora</Link>
@@ -372,7 +372,7 @@ export function DoctorSignupPage() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600">
                   <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
                 </div>
-                <span className="text-[15px] font-black text-slate-700 dark:text-slate-300">+1,200 Médicos Activos</span>
+                <span className="text-[15px] font-black text-slate-700 dark:text-slate-300">+25 Médicos Activos</span>
               </div>
             </div>
           </div>
@@ -382,7 +382,7 @@ export function DoctorSignupPage() {
               <div className="space-y-8">
                 <img src="https://images.unsplash.com/photo-1551076805-e1869033e561?w=800&q=80" alt="Doctor" className="rounded-[48px] aspect-[4/5] object-cover shadow-2xl shadow-brand-500/10 ring-1 ring-slate-200 dark:ring-white/10" />
                 <div className="rounded-[32px] bg-white p-8 shadow-xl dark:bg-slate-900 border border-slate-100 dark:border-white/5">
-                  <div className="text-3xl font-black text-slate-900 dark:text-white">98%</div>
+                  <div className="text-3xl font-black text-slate-900 dark:text-white">100%</div>
                   <div className="text-[11px] font-black uppercase tracking-widest text-slate-400 mt-1">Satisfacción</div>
                 </div>
               </div>
@@ -402,10 +402,10 @@ export function DoctorSignupPage() {
       <section ref={statsRef} className="section-container -mt-16 relative z-20">
         <div className="rounded-[40px] bg-white p-12 shadow-2xl shadow-brand-900/10 dark:bg-slate-900 border border-white dark:border-white/5">
           <div className="grid gap-12 text-center sm:grid-cols-2 lg:grid-cols-4">
-            <AnimatedStat prefix="+" value={12000} label="Pacientes al mes" started={statsStarted} />
-            <AnimatedStat prefix="+" value={1200} label="Médicos activos" started={statsStarted} />
-            <AnimatedStat value={98} suffix="%" label="Tasa de éxito" started={statsStarted} />
-            <AnimatedStat value={25} suffix="+" label="Especialidades" started={statsStarted} />
+            <AnimatedStat prefix="+" value={120} label="Pacientes al mes" started={statsStarted} />
+            <AnimatedStat prefix="+" value={25} label="Médicos activos" started={statsStarted} />
+            <AnimatedStat value={100} suffix="%" label="Tasa de éxito" started={statsStarted} />
+            <AnimatedStat value={20} suffix="+" label="Especialidades" started={statsStarted} />
           </div>
         </div>
       </section>
@@ -416,7 +416,7 @@ export function DoctorSignupPage() {
           <div className="text-center max-w-3xl mx-auto">
             <div className="inline-block rounded-xl bg-brand-50 px-4 py-1.5 text-[12px] font-black uppercase tracking-widest text-brand-600 dark:bg-brand-500/10 dark:text-brand-400">Ventajas</div>
             <h2 className="mt-6 text-4xl font-black tracking-tight text-slate-950 dark:text-white md:text-5xl">
-              Digitaliza tu práctica con <span className="text-brand-600">MedicoTrujillo</span>
+              Digitaliza tu práctica con <span className="text-brand-600">MédiTrujillo</span>
             </h2>
           </div>
 

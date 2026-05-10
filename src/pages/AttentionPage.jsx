@@ -49,7 +49,7 @@ export function AttentionPage() {
               <span className="text-emerald-600 dark:text-emerald-500">puede esperar.</span>
             </h1>
             <p className="mt-8 text-lg font-bold text-slate-600 dark:text-slate-400 md:text-xl lg:max-w-xl">
-              Encuentra especialistas en Trujillo con disponibilidad inmediata. Sin colas ni esperas largas, atención directa hoy mismo con total transparencia sobre el profesional que te atenderá.
+              Encuentra especialistas en Perú con disponibilidad inmediata. Sin colas ni esperas largas, atención directa hoy mismo con total transparencia sobre el profesional que te atenderá.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
                <div className="flex items-center gap-3 rounded-2xl bg-slate-50 dark:bg-white/5 px-6 py-4 border border-slate-200 dark:border-white/10 shadow-sm">

@@ -83,7 +83,14 @@ export function Footer() {
           </div>
           <div className="flex gap-8">
             <a href="mailto:contacto@meditrujillo.pe" className="text-[14px] font-bold text-slate-500 hover:text-brand-600 dark:hover:text-white transition-colors">contacto@meditrujillo.pe</a>
-            <a href="tel:+51949021141" className="text-[14px] font-bold text-slate-500 hover:text-brand-600 dark:hover:text-white transition-colors">+51 949 021 141</a>
+            <a 
+              href="https://wa.me/51962525857" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-[14px] font-bold text-slate-500 hover:text-brand-600 dark:hover:text-white transition-colors"
+            >
+              +51 962 525 857
+            </a>
           </div>
         </div>
       </div>
