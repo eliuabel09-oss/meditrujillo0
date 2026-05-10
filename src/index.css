@@ -118,6 +118,21 @@ select {
   font-family: 'Inter', sans-serif;
 }
 
+.themed-select option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
+html.dark .themed-select option {
+  background-color: #0f172a;
+  color: #f8fafc;
+}
+
+html.dark .themed-select option:checked {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
 /* Custom Utilities */
 @layer components {
   .section-container {

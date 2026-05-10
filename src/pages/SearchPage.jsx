@@ -18,24 +18,53 @@ const normalizeString = (str) =>
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
 
+const getSpecialtyMatches = (value) => {
+  const normalizedValue = normalizeString(value).trim()
+  if (!normalizedValue) return []
+  return specialties.filter((specialty) => normalizeString(specialty).includes(normalizedValue))
+}
+
+const getSingleSpecialtyMatch = (value) => {
+  const normalizedValue = normalizeString(value).trim()
+  if (!normalizedValue) return ''
+
+  const exactMatch = specialties.find((specialty) => normalizeString(specialty) === normalizedValue)
+  if (exactMatch) return exactMatch
+
+  const matches = getSpecialtyMatches(value)
+  return matches.length === 1 ? matches[0] : ''
+}
+
 export function SearchPage() {
   const { doctors } = useAppContext()
   const [searchParams] = useSearchParams()
   const initialQuery = searchParams.get('q') ?? ''
+  const initialSpecialty = searchParams.get('specialty') ?? ''
+  const initialDepartment = searchParams.get('department') ?? ''
   const initialAvailable = searchParams.get('available') === 'true'
   const [query, setQuery] = useState(initialQuery)
+  const [homeSpecialty, setHomeSpecialty] = useState(() => {
+    const selectedSpecialty = getSingleSpecialtyMatch(initialSpecialty)
+    return selectedSpecialty ? '' : initialSpecialty
+  })
   const [filters, setFilters] = useState({
-    specialty: '',
-    department: '',
+    specialty: getSingleSpecialtyMatch(initialSpecialty),
+    department: initialDepartment,
     priceRange: '',
     availableNow: initialAvailable
   })
 
   useEffect(() => {
+    const specialtyFromHome = searchParams.get('specialty') ?? ''
+    const selectedSpecialty = getSingleSpecialtyMatch(specialtyFromHome)
     setQuery(searchParams.get('q') ?? '')
-    if (searchParams.get('available') === 'true') {
-      setFilters(prev => ({ ...prev, availableNow: true }))
-    }
+    setHomeSpecialty(selectedSpecialty ? '' : specialtyFromHome)
+    setFilters(prev => ({
+      ...prev,
+      specialty: selectedSpecialty,
+      department: searchParams.get('department') ?? '',
+      availableNow: searchParams.get('available') === 'true'
+    }))
   }, [searchParams])
 
   useSEO({
@@ -47,10 +76,14 @@ export function SearchPage() {
     const queryNorm = normalizeString(query)
     const specialtyNorm = normalizeString(filters.specialty)
     const departmentNorm = normalizeString(filters.department)
+    const homeSpecialtyMatches = getSpecialtyMatches(homeSpecialty)
+    const hasInvalidHomeSpecialty = Boolean(homeSpecialty.trim()) && homeSpecialtyMatches.length === 0
 
     return doctors
       .filter((doctor) => doctor.status === 'active')
+      .filter(() => !hasInvalidHomeSpecialty)
       .filter((doctor) => !filters.specialty || normalizeString(doctor.specialty) === specialtyNorm)
+      .filter((doctor) => !homeSpecialty.trim() || homeSpecialtyMatches.includes(doctor.specialty))
       .filter((doctor) => !filters.department || normalizeString(doctor.department) === departmentNorm)
       .filter((doctor) => !filters.availableNow || doctor.availableNow)
       .filter((doctor) => !filters.priceRange || priceRanges.find((item) => item.label === filters.priceRange)?.test(Number(doctor.price)))
@@ -61,7 +94,7 @@ export function SearchPage() {
         )
         return searchTarget.includes(queryNorm)
       })
-  }, [doctors, filters, query])
+  }, [doctors, filters, query, homeSpecialty])
 
   return (
     <main className="bg-slate-50/50 dark:bg-slate-950/50 pb-20">
@@ -103,6 +136,7 @@ export function SearchPage() {
                 <button 
                   onClick={() => {
                     setQuery('')
+                    setHomeSpecialty('')
                     setFilters({ specialty: '', department: '', priceRange: '', availableNow: false })
                   }}
                   className="text-[13px] font-bold text-brand-600 hover:underline dark:text-brand-400"
@@ -117,7 +151,10 @@ export function SearchPage() {
                 <SelectField
                   label="Especialidad"
                   value={filters.specialty}
-                  onChange={(value) => setFilters((prev) => ({ ...prev, specialty: value }))}
+                  onChange={(value) => {
+                    setHomeSpecialty('')
+                    setFilters((prev) => ({ ...prev, specialty: value }))
+                  }}
                   options={['', ...specialties]}
                   emptyLabel="Todas las especialidades"
                 />
@@ -193,7 +230,10 @@ export function SearchPage() {
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">No hay resultados</h3>
                 <p className="mt-2 max-w-xs text-slate-500 font-medium">Intenta ajustar los filtros para encontrar más opciones.</p>
                 <button 
-                  onClick={() => setFilters({ specialty: '', department: '', priceRange: '', availableNow: false })}
+                  onClick={() => {
+                    setHomeSpecialty('')
+                    setFilters({ specialty: '', department: '', priceRange: '', availableNow: false })
+                  }}
                   className="mt-8 text-brand-600 font-black hover:underline"
                 >
                   Restablecer filtros
@@ -228,7 +268,7 @@ function SelectField({ label, value, onChange, options, emptyLabel }) {
     <div className="space-y-2">
       <span className="text-[13px] font-black uppercase tracking-widest text-slate-400">{label}</span>
       <select 
-        className="h-[52px] w-full appearance-none rounded-2xl bg-slate-50 px-5 text-[15px] font-bold text-slate-900 outline-none ring-2 ring-transparent transition-all focus:bg-white focus:ring-brand-500/20 dark:bg-white/5 dark:text-white dark:focus:bg-slate-800" 
+        className="themed-select h-[52px] w-full appearance-none rounded-2xl bg-slate-50 px-5 text-[15px] font-bold text-slate-900 outline-none ring-2 ring-transparent transition-all focus:bg-white focus:ring-brand-500/20 dark:bg-white/5 dark:text-white dark:focus:bg-slate-800" 
         value={value} 
         onChange={(event) => onChange(event.target.value)}
       >

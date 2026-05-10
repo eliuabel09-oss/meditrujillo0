@@ -6,6 +6,7 @@ import { DoctorShowcase } from '../components/DoctorShowcase'
 import { SectionHeader } from '../components/SectionHeader'
 import { useSEO } from '../hooks/useSEO'
 import { AiOrientationTool } from '../components/AiOrientationTool'
+import { departments } from '../data'
 
 const clinicTiles = [
   {
@@ -133,9 +134,11 @@ export function HomePage() {
 
             <form onSubmit={(e) => {
               e.preventDefault();
-              let finalQuery = searchQuery;
-              if (searchDistrict) finalQuery += ` ${searchDistrict}`;
-              navigate(`/buscar-doctor?q=${encodeURIComponent(finalQuery.trim())}`);
+              const params = new URLSearchParams()
+              const specialty = searchQuery.trim()
+              if (specialty) params.set('specialty', specialty)
+              if (searchDistrict) params.set('department', searchDistrict)
+              navigate(`/buscar-doctor${params.toString() ? `?${params.toString()}` : ''}`);
             }} className="hero-search-bar mt-8 md:mt-10 mx-auto glass-card flex flex-col sm:flex-row items-center p-2 gap-2 sm:gap-0 max-w-3xl">
               <div className="flex items-center flex-1 px-4 gap-3 w-full">
                 <label htmlFor="hero-search-input" className="sr-only">Nombre, especialidad o clínica</label>
@@ -154,37 +157,15 @@ export function HomePage() {
                 <label htmlFor="hero-district-select" className="sr-only">Seleccionar distrito</label>
                 <select
                   id="hero-district-select"
-                  className="bg-transparent py-4 text-[15px] font-bold text-slate-700 outline-none dark:text-slate-300 w-full cursor-pointer appearance-none pr-8 relative"
+                  className="themed-select bg-transparent py-4 text-[15px] font-bold text-slate-700 outline-none dark:text-slate-300 w-full cursor-pointer appearance-none pr-8 relative"
                   value={searchDistrict}
                   onChange={(e) => setSearchDistrict(e.target.value)}
                   style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'%2364748b\' stroke-width=\'2.5\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' d=\'M19.5 8.25l-7.5 7.5-7.5-7.5\' /%3E%3C/svg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right center', backgroundSize: '1.2em' }}
                 >
                   <option value="">Departamentos</option>
-                  <option value="Tumbes">Tumbes</option>
-                  <option value="Piura">Piura</option>
-                  <option value="Lambayeque">Lambayeque</option>
-                  <option value="La Libertad">La Libertad</option>
-                  <option value="Ancash">Ancash</option>
-                  <option value="Lima">Lima</option>
-                  <option value="Ica">Ica</option>
-                  <option value="Arequipa">Arequipa</option>
-                  <option value="Moquegua">Moquegua</option>
-                  <option value="Tacna">Tacna</option>
-                  <option value="Cajamarca">Cajamarca</option>
-                  <option value="Huánuco">Huánuco</option>
-                  <option value="Pasco">Pasco</option>
-                  <option value="Junín">Junín</option>
-                  <option value="Huancavelica">Huancavelica</option>
-                  <option value="Ayacucho">Ayacucho</option>
-                  <option value="Apurímac">Apurímac</option>
-                  <option value="Cusco">Cusco</option>
-                  <option value="Puno">Puno</option>
-                  <option value="Loreto">Loreto</option>
-                  <option value="Amazonas">Amazonas</option>
-                  <option value="San Martín">San Martín</option>
-                  <option value="Ucayali">Ucayali</option>
-                  <option value="Madre de Dios">Madre de Dios</option>
-
+                  {departments.map((department) => (
+                    <option key={department} value={department}>{department}</option>
+                  ))}
                 </select>
 
               </div>
